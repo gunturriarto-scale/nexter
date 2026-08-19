@@ -1,0 +1,177 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f5f2f3;
+  --foreground: #342d32;
+  --glow-pink: #f0466d;
+  --glow-purple: #8154b6;
+  --glow-coral: #ec5932;
+  --glow-soft-pink: #f6a7bc;
+  --glow-lavender: #aaa0d3;
+  --glow-blush: #facbd4;
+  --glow-peach: #f7b8aa;
+  --glow-soft-lavender: #c4c2f2;
+  --glow-off-white: #f5f2f3;
+  --glow-white: #ffffff;
+  --glow-charcoal: #342d32;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-glow-sans);
+  --font-mono: var(--font-glow-mono);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-glow-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ---- Glow FX brand utilities ---- */
+.glow-pink { color: var(--glow-pink); }
+.glow-purple { color: var(--glow-purple); }
+
+.gfx-bg { background: var(--glow-off-white); }
+.gfx-gradient {
+  background: linear-gradient(150deg, #f0466d 0%, #f6a7bc 45%, #facbd4 100%);
+}
+.gfx-gradient-soft {
+  background: linear-gradient(160deg, #ffffff 0%, #fdf3f5 50%, #f5effb 100%);
+}
+.gfx-text-gradient {
+  background: linear-gradient(120deg, #f0466d 0%, #8154b6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.gfx-card {
+  background: var(--glow-white);
+  border: 1px solid #f0e4e9;
+  border-radius: 0;
+  box-shadow: 0 1px 2px rgba(52, 45, 50, 0.04), 0 8px 24px -12px rgba(240, 70, 109, 0.12);
+}
+.gfx-card-hover {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.gfx-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(52, 45, 50, 0.06), 0 16px 32px -12px rgba(129, 84, 182, 0.18);
+}
+
+.gfx-table-wrap {
+  border: 1px solid #f0e4e9;
+  border-radius: 0;
+  overflow: hidden;
+  background: var(--glow-white);
+  box-shadow: 0 1px 2px rgba(52, 45, 50, 0.04), 0 8px 24px -12px rgba(240, 70, 109, 0.10);
+}
+.gfx-th {
+  background: linear-gradient(180deg, #fdf0f3 0%, #f9e7ec 100%);
+  color: #8154b6;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+.gfx-row-border td {
+  border-top: 1px solid #f7eef1;
+}
+
+.gfx-chip {
+  border-radius: 0;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 10px;
+}
+
+.gfx-btn {
+  background: linear-gradient(120deg, #f0466d 0%, #ec5932 100%);
+  color: #fff;
+  border-radius: 0;
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  box-shadow: 0 8px 20px -8px rgba(240, 70, 109, 0.55);
+}
+.gfx-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.gfx-select, .gfx-input {
+  border: 1px solid #eadfe4;
+  border-radius: 0;
+  background: var(--glow-white);
+  padding: 6px 10px;
+  font-size: 13px;
+  color: var(--glow-charcoal);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.gfx-select:focus, .gfx-input:focus {
+  border-color: var(--glow-pink);
+  box-shadow: 0 0 0 3px rgba(240, 70, 109, 0.15);
+}
+
+.gfx-filter-bar {
+  background: var(--glow-white);
+  border: 1px solid #f0e4e9;
+  border-radius: 0;
+  box-shadow: 0 1px 2px rgba(52, 45, 50, 0.04), 0 8px 24px -12px rgba(240, 70, 109, 0.10);
+}
+
+.gfx-kpi {
+  background: var(--glow-white);
+  border: 1px solid #f0e4e9;
+  border-radius: 0;
+  padding: 16px;
+  box-shadow: 0 1px 2px rgba(52, 45, 50, 0.04), 0 8px 24px -12px rgba(240, 70, 109, 0.10);
+  position: relative;
+  overflow: hidden;
+}
+.gfx-kpi::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #f0466d 0%, #8154b6 100%);
+}
+.gfx-kpi .kpi-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #9d8a97;
+}
+.gfx-kpi .kpi-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--glow-charcoal);
+  margin-top: 2px;
+  letter-spacing: -0.01em;
+}
+
+.gfx-section-title {
+  font-family: var(--font-glow-serif), Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--glow-charcoal);
+}
+.gfx-section-desc {
+  font-size: 12px;
+  color: #9d8a97;
+}
+
+.gfx-badge-pill {
+  border-radius: 0;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
