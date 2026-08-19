@@ -10,6 +10,7 @@ import {
   ShopeeShop,
   ShopeeVideo,
   OrderStatus,
+  ProductStatus,
   ReturnStatus,
   ReturnReason,
 } from "@/lib/shopee/types";
@@ -214,8 +215,8 @@ const CATALOG: CatalogEntry[] = [
   },
 ];
 
-export const MOCK_PRODUCTS: ShopeeProduct[] = CATALOG.map((c, i) => {
-  const status = i === 12 ? "UNLIST" : rng() < 0.03 ? "BANNED" : "NORMAL";
+export const MOCK_PRODUCTS: ShopeeProduct[] = CATALOG.map((c, i): ShopeeProduct => {
+  const status: ProductStatus = i === 12 ? "UNLIST" : rng() < 0.03 ? "BANNED" : "NORMAL";
   const unitsSold = randInt(20, 620);
   const revenue = unitsSold * c.basePrice;
   return {
@@ -291,7 +292,7 @@ function buildOrderItems(): ShopeeOrderItem[] {
   return items;
 }
 
-export const MOCK_ORDERS: ShopeeOrder[] = Array.from({ length: 72 }, (_, i) => {
+export const MOCK_ORDERS: ShopeeOrder[] = Array.from({ length: 72 }, (_, i): ShopeeOrder => {
   const hoursAgo = randInt(1, RANGE_DAYS * 24);
   const createTime = isoDatetimeAgo(hoursAgo);
   const status = pickWeighted(ORDER_STATUS_WEIGHTS);

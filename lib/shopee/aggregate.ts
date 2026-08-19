@@ -46,6 +46,7 @@ export function computeExecutiveKpis(orders: ShopeeOrder[], returns: ShopeeRetur
 }
 
 export interface DayPoint {
+  [key: string]: string | number;
   day: string;
   gmv: number;
   orders: number;
@@ -201,6 +202,7 @@ export function buildReturnReasonBreakdown(returns: ShopeeReturn[]): ReturnReaso
 }
 
 export interface ReturnTrendPoint {
+  [key: string]: string | number;
   day: string;
   orders: number;
   returns: number;
@@ -282,6 +284,7 @@ export function sumAds(rows: ShopeeAdsDaily[]): AdsTotals {
 }
 
 export interface AdsDayPoint {
+  [key: string]: string | number;
   day: string;
   cost: number;
   gmv: number;
