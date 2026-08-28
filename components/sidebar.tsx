@@ -30,6 +30,12 @@ const NAV_SECTIONS = [
       { href: "/shopee", label: "Shopee", description: "Order, produk, ads & retur" },
     ],
   },
+  {
+    title: "Setup",
+    items: [
+      { href: "/creator/admin", label: "Affiliate Data", description: "Input mapping tim (mockup)" },
+    ],
+  },
 ];
 
 export function Sidebar() {
