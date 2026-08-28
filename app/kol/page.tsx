@@ -140,7 +140,6 @@ export default async function CreatorPage({
     { label: "Affiliates (earning)", value: integer(overview.activeAffiliates.current), metric: overview.activeAffiliates },
     { label: "Affiliate actives", value: integer(overview.postingAffiliates.current), metric: overview.postingAffiliates },
     { label: "Orders", value: integer(overview.orders.current), metric: overview.orders },
-    { label: "Commissions", value: compactIdr(overview.commission.current), metric: overview.commission },
   ];
 
   return (
