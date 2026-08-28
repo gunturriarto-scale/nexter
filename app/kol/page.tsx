@@ -130,13 +130,16 @@ export default async function CreatorPage({
   const levels = Array.from(new Set(MOCK_CREATOR_LEVEL_SNAPSHOTS.map((snapshot) => snapshot.level))).sort();
   const tags = Array.from(new Set(MOCK_AFFILIATE_PROFILES.flatMap((creator) => creator.tags))).sort();
   const kpis = [
-    { label: "Affiliate GMV", value: compactIdr(overview.gmv.current), metric: overview.gmv },
-    { label: "Affiliate NMV", value: compactIdr(overview.nmv.current), metric: overview.nmv },
-    { label: "Active affiliates", value: integer(overview.activeAffiliates.current), metric: overview.activeAffiliates },
+    { label: "GMV", value: compactIdr(overview.gmv.current), metric: overview.gmv },
+    { label: "NMV", value: compactIdr(overview.nmv.current), metric: overview.nmv },
+    { label: "GMV Video", value: compactIdr(overview.gmvVideo.current), metric: overview.gmvVideo },
     { label: "Video quantity", value: integer(overview.videoQuantity.current), metric: overview.videoQuantity },
-    { label: "Valid videos", value: integer(overview.validVideoQuantity.current), metric: overview.validVideoQuantity },
+    { label: "GMV Live", value: compactIdr(overview.gmvLive.current), metric: overview.gmvLive },
+    { label: "Quantity of livestreamers", value: integer(overview.liveStreamers.current), metric: overview.liveStreamers },
+    { label: "GMV Product Card", value: compactIdr(overview.gmvProductCard.current), metric: overview.gmvProductCard },
+    { label: "Affiliate actives", value: integer(overview.activeAffiliates.current), metric: overview.activeAffiliates },
     { label: "Orders", value: integer(overview.orders.current), metric: overview.orders },
-    { label: "Commission", value: compactIdr(overview.commission.current), metric: overview.commission },
+    { label: "Commissions", value: compactIdr(overview.commission.current), metric: overview.commission },
   ];
 
   return (
@@ -194,7 +197,7 @@ export default async function CreatorPage({
         <>
           <section className="mt-6">
             <div className="flex items-end justify-between gap-4"><div><div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#2563EB]">Affiliate Marketing Overview</div><h2 className="gfx-section-title mt-1">Performance snapshot</h2></div><div className="text-[10px] text-[#7A8AA3]">{startDate} — {endDate}</div></div>
-            <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
+            <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
               {kpis.map((kpi) => <article key={kpi.label} className="gfx-kpi min-h-[94px]"><div className="kpi-label">{kpi.label}</div><div className="kpi-value">{kpi.value}</div><div className="mt-2"><Change metric={kpi.metric} /></div></article>)}
             </div>
           </section>
