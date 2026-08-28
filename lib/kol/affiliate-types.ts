@@ -104,7 +104,11 @@ export interface MetricValue {
 export interface AffiliateOverviewMetrics {
   gmv: MetricValue;
   nmv: MetricValue;
+  gmvVideo: MetricValue;
+  gmvLive: MetricValue;
+  gmvProductCard: MetricValue;
   activeAffiliates: MetricValue;
+  liveStreamers: MetricValue; // distinct creators who went LIVE in the period
   videoQuantity: MetricValue;
   validVideoQuantity: MetricValue;
   orders: MetricValue;

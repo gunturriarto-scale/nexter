@@ -180,14 +180,18 @@ function totals(
   creators: AffiliateCreatorProfile[]
 ) {
   const identityMap = buildCreatorIdentityMap(creators);
+  const creatorIdOf = (username: string) => identityMap.get(normalizeUsername(username))?.creatorId;
+  const gmvByChannel = (channel: AffiliateDailyFact["channel"]) =>
+    facts.reduce((sum, fact) => (fact.channel === channel ? sum + fact.gmv : sum), 0);
   return {
     gmv: facts.reduce((sum, fact) => sum + fact.gmv, 0),
     nmv: facts.reduce((sum, fact) => sum + netMerchandiseValue(fact), 0),
-    activeAffiliates: new Set(
-      facts.flatMap((fact) => {
-        const creator = identityMap.get(normalizeUsername(fact.creatorUsername));
-        return creator ? [creator.creatorId] : [];
-      })
+    gmvVideo: gmvByChannel("VIDEO"),
+    gmvLive: gmvByChannel("LIVE"),
+    gmvProductCard: gmvByChannel("PRODUCT_CARD"),
+    activeAffiliates: new Set(facts.flatMap((fact) => (creatorIdOf(fact.creatorUsername) ? [creatorIdOf(fact.creatorUsername)!] : []))).size,
+    liveStreamers: new Set(
+      facts.flatMap((fact) => (fact.channel === "LIVE" && creatorIdOf(fact.creatorUsername) ? [creatorIdOf(fact.creatorUsername)!] : []))
     ).size,
     videoQuantity: new Set(videos.map((video) => video.videoId)).size,
     validVideoQuantity: validVideoIds(videos, campaigns).size,
@@ -220,7 +224,11 @@ export function buildAffiliateOverview(
   return {
     gmv: metric(currentTotals.gmv, previousTotals.gmv),
     nmv: metric(currentTotals.nmv, previousTotals.nmv),
+    gmvVideo: metric(currentTotals.gmvVideo, previousTotals.gmvVideo),
+    gmvLive: metric(currentTotals.gmvLive, previousTotals.gmvLive),
+    gmvProductCard: metric(currentTotals.gmvProductCard, previousTotals.gmvProductCard),
     activeAffiliates: metric(currentTotals.activeAffiliates, previousTotals.activeAffiliates),
+    liveStreamers: metric(currentTotals.liveStreamers, previousTotals.liveStreamers),
     videoQuantity: metric(currentTotals.videoQuantity, previousTotals.videoQuantity),
     validVideoQuantity: metric(currentTotals.validVideoQuantity, previousTotals.validVideoQuantity),
     orders: metric(currentTotals.orders, previousTotals.orders),
