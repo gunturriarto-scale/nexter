@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { MOCK_SHOPS, MOCK_PRODUCTS, MOCK_REGION, MOCK_CATEGORIES } from "@/lib/market-intel/mock-data";
 import { MOCK_CREATORS, MOCK_VIDEOS, MOCK_LIVESTREAMS } from "@/lib/market-intel/benchmark-mock-data";
-import { buildInsights, rankShops, buildMarketSize, buildWhitespace, buildPositioning, buildBreakout } from "@/lib/market-intel/aggregate";
+import { buildInsights, rankShops, buildMarketSize, buildWhitespace, buildBreakout } from "@/lib/market-intel/aggregate";
 import { formatIdrCompact, formatNumber, formatPct, formatGrowthPct } from "@/lib/market-intel/format";
 import { BrandRankTable } from "@/app/market-intel/brand-rank-table";
 import { ProductRankTable } from "@/app/market-intel/product-rank-table";
@@ -59,7 +59,6 @@ export default async function MarketIntelPage({
   const insights = buildInsights(shops);
   const marketSize = buildMarketSize(categories, shops);
   const whitespace = buildWhitespace(categories, products, shops);
-  const positioning = buildPositioning(shops);
   const breakout = buildBreakout(products);
 
   const summaryRingkasan = summarizeRingkasan(shops, marketSize);
@@ -79,27 +78,27 @@ export default async function MarketIntelPage({
   return (
     <main className="mx-auto max-w-7xl px-6 py-10">
       {/* Header */}
-      <div className="mb-4 inline-flex items-center gap-2 rounded-none bg-white px-3 py-1 text-xs font-semibold text-[#8154b6] ring-1 ring-[#c4c2f2]">
-        <span className="h-2 w-2 rounded-none bg-[#f0466d]" />
+      <div className="mb-4 inline-flex items-center gap-2 rounded-none bg-white px-3 py-1 text-xs font-semibold text-[#0891B2] ring-1 ring-[#BFDBFE]">
+        <span className="h-2 w-2 rounded-none bg-[#2563EB]" />
         Mockup mode — data dummy, struktur field = KaloData Open Center (region ID, IDR)
       </div>
-      <h1 className="font-serif text-3xl font-semibold tracking-tight text-[#342d32]">
+      <h1 className="font-serif text-3xl font-semibold tracking-tight text-[#14213D]">
         Market Intelligence <span className="gfx-text-gradient">— Skincare ID</span>
       </h1>
-      <p className="mt-1 text-sm text-[#9d8a97]">
+      <p className="mt-1 text-sm text-[#7A8AA3]">
         Glow FX vs kompetitor skincare Indonesia — revenue, growth, konten, kreator, dan produk dalam
         satu dashboard. POV: brand, product development, dan CEO.
       </p>
 
       {/* Filter bar (mock) */}
       <form className="gfx-filter-bar mt-6 flex flex-wrap items-end gap-4 p-4">
-        <label className="flex flex-col text-sm text-[#6b5a66]">
+        <label className="flex flex-col text-sm text-[#4B5D78]">
           Region
           <select className="gfx-select mt-1">
             <option>{MOCK_REGION} — Indonesia</option>
           </select>
         </label>
-        <label className="flex flex-col text-sm text-[#6b5a66]">
+        <label className="flex flex-col text-sm text-[#4B5D78]">
           Kategori
           <select className="gfx-select mt-1">
             <option>Beauty — Skincare</option>
@@ -107,7 +106,7 @@ export default async function MarketIntelPage({
             <option>Personal Care</option>
           </select>
         </label>
-        <label className="flex flex-col text-sm text-[#6b5a66]">
+        <label className="flex flex-col text-sm text-[#4B5D78]">
           Periode
           <select className="gfx-select mt-1">
             <option>30 hari terakhir</option>
@@ -115,7 +114,7 @@ export default async function MarketIntelPage({
             <option>90 hari terakhir</option>
           </select>
         </label>
-        <label className="flex flex-col text-sm text-[#6b5a66]">
+        <label className="flex flex-col text-sm text-[#4B5D78]">
           Tipe shop
           <select className="gfx-select mt-1">
             <option>Semua</option>
@@ -129,7 +128,7 @@ export default async function MarketIntelPage({
       </form>
 
       {/* Tab bar */}
-      <div className="mt-8 flex flex-wrap gap-2 border-b border-[#f0e4e9]">
+      <div className="mt-8 flex flex-wrap gap-2 border-b border-[#DDE6F0]">
         {TABS.map((t) => {
           const active = activeTab === t.key;
           return (
@@ -138,8 +137,8 @@ export default async function MarketIntelPage({
               href={`/market-intel?tab=${t.key}`}
               className={`-mb-px rounded-none px-4 py-2.5 text-sm font-semibold transition-colors ${
                 active
-                  ? "border border-b-0 border-[#f0e4e9] bg-white text-[#f0466d]"
-                  : "text-[#9d8a97] hover:bg-[#fdf0f3] hover:text-[#342d32]"
+                  ? "border border-b-0 border-[#DDE6F0] bg-white text-[#2563EB]"
+                  : "text-[#7A8AA3] hover:bg-[#EFF6FF] hover:text-[#14213D]"
               }`}
             >
               <span className="mr-1.5">{t.icon}</span>
@@ -215,7 +214,7 @@ export default async function MarketIntelPage({
           </section>
 
           <section className="mt-6">
-            <h2 className="font-serif text-xl font-semibold tracking-tight text-[#342d32]">
+            <h2 className="font-serif text-xl font-semibold tracking-tight text-[#14213D]">
               Glow FX vs Everybody <span className="gfx-text-gradient">— 8 lensa komparasi</span>
             </h2>
           </section>

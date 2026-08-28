@@ -37,31 +37,31 @@ export function ProductRankTable({ products }: { products: Product[] }) {
           {sorted.map((p) => (
             <tr
               key={p.productId}
-              className={`gfx-row-border ${p.shopName === "Glow FX" ? "bg-[#fdf0f3]/40" : ""}`}
+              className={`gfx-row-border ${p.shopName === "Glow FX" ? "bg-[#EFF6FF]/40" : ""}`}
             >
               <td className="px-3 py-2">
-                <div className="font-semibold text-[#342d32]">{p.productName}</div>
+                <div className="font-semibold text-[#14213D]">{p.productName}</div>
               </td>
               <td className="px-3 py-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-[#6b5a66]">{p.shopName}</span>
+                  <span className="text-[#4B5D78]">{p.shopName}</span>
                   <GlowChip name={p.shopName} />
                 </div>
               </td>
-              <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#342d32]">
+              <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#14213D]">
                 {formatIdrCompact(p.revenue)}
               </td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">
+              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">
                 {formatGrowthPct(p.revenueGrowthRate)}
               </td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatIdrCompact(p.unitPrice)}</td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatNumber(p.salesVolumn)}</td>
-              <td className="whitespace-nowrap px-3 py-2 font-medium text-[#8154b6]">
+              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(p.unitPrice)}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(p.salesVolumn)}</td>
+              <td className="whitespace-nowrap px-3 py-2 font-medium text-[#0891B2]">
                 {formatPct(p.commissionRate)}
               </td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatIdrCompact(p.videoRevenue)}</td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatIdrCompact(p.liveRevenue)}</td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatNumber(p.productReviewCount)}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(p.videoRevenue)}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(p.liveRevenue)}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(p.productReviewCount)}</td>
             </tr>
           ))}
         </tbody>

@@ -71,25 +71,25 @@ export function ProdukSection({
               {products.map((p) => (
                 <tr key={p.itemId} className="gfx-row-border align-top">
                   <td className="px-3 py-2">
-                    <div className="font-medium text-[#342d32]">{p.itemName}</div>
-                    <div className="text-xs text-[#9d8a97]">{p.itemSku}</div>
+                    <div className="font-medium text-[#14213D]">{p.itemName}</div>
+                    <div className="text-xs text-[#7A8AA3]">{p.itemSku}</div>
                     {p.models.length > 1 && (
                       <div className="mt-1 flex flex-wrap gap-1">
                         {p.models.map((m) => (
-                          <span key={m.modelId} className="gfx-chip bg-[#fdf0f3] text-[#8154b6]">
+                          <span key={m.modelId} className="gfx-chip bg-[#EFF6FF] text-[#0891B2]">
                             {m.modelName} · {m.stock}
                           </span>
                         ))}
                       </div>
                     )}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{p.categoryName}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatIdrCompact(p.price)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatNumber(p.stock)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatNumber(p.views)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatNumber(p.unitsSold)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#f0466d]">{formatIdrCompact(p.revenue)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">⭐ {p.ratingStar.toFixed(1)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{p.categoryName}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(p.price)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(p.stock)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(p.views)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(p.unitsSold)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#2563EB]">{formatIdrCompact(p.revenue)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">⭐ {p.ratingStar.toFixed(1)}</td>
                   <td className="whitespace-nowrap px-3 py-2">
                     <ProductStatusChip status={p.status} />
                   </td>
@@ -120,18 +120,18 @@ export function ProdukSection({
             <tbody>
               {pareto.map((row, i) => (
                 <tr key={row.product.itemId} className="gfx-row-border">
-                  <td className="whitespace-nowrap px-3 py-2 text-[#9d8a97]">{i + 1}</td>
-                  <td className="px-3 py-2 font-medium text-[#342d32]">{row.product.itemName}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatIdrCompact(row.revenue)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#7A8AA3]">{i + 1}</td>
+                  <td className="px-3 py-2 font-medium text-[#14213D]">{row.product.itemName}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(row.revenue)}</td>
                   <td className="whitespace-nowrap px-3 py-2">
                     <div className="flex items-center gap-2">
-                      <div className="h-1.5 w-16 overflow-hidden rounded-none bg-[#f7eef1]">
+                      <div className="h-1.5 w-16 overflow-hidden rounded-none bg-[#EDF3F8]">
                         <div
-                          className="h-full bg-gradient-to-r from-[#f0466d] to-[#8154b6]"
+                          className="h-full bg-gradient-to-r from-[#2563EB] to-[#0891B2]"
                           style={{ width: `${Math.min(row.cumulativePct, 100)}%` }}
                         />
                       </div>
-                      <span className="text-[#6b5a66]">{row.cumulativePct.toFixed(0)}%</span>
+                      <span className="text-[#4B5D78]">{row.cumulativePct.toFixed(0)}%</span>
                     </div>
                   </td>
                 </tr>

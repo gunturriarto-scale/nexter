@@ -17,36 +17,36 @@ export function BreakoutRadar({ rows }: { rows: BreakoutRow[] }) {
         </thead>
         <tbody>
           {rows.map((r) => (
-            <tr key={r.productName} className={`gfx-row-border ${r.isGlow ? "bg-[#fdf0f3]/40" : ""}`}>
-              <td className="px-3 py-2 font-semibold text-[#342d32]">{r.productName}</td>
+            <tr key={r.productName} className={`gfx-row-border ${r.isGlow ? "bg-[#EFF6FF]/40" : ""}`}>
+              <td className="px-3 py-2 font-semibold text-[#14213D]">{r.productName}</td>
               <td className="px-3 py-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-[#6b5a66]">{r.shopName}</span>
+                  <span className="text-[#4B5D78]">{r.shopName}</span>
                   <GlowChip name={r.shopName} />
                 </div>
               </td>
               <td className="whitespace-nowrap px-3 py-2">
-                <span className={`font-semibold ${r.growth >= 25 ? "text-emerald-700" : "text-[#6b5a66]"}`}>
+                <span className={`font-semibold ${r.growth >= 25 ? "text-emerald-700" : "text-[#4B5D78]"}`}>
                   {formatGrowthPct(r.growth)}
                 </span>
                 {r.growth >= 25 && <span className="ml-1">🔥</span>}
               </td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatIdrCompact(r.revenue)}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(r.revenue)}</td>
               <td className="whitespace-nowrap px-3 py-2">
                 {r.isNew ? (
-                  <span className="rounded-none bg-[#f5effb] px-2 py-0.5 text-[11px] font-semibold text-[#8154b6]">
+                  <span className="rounded-none bg-[#EEF4FF] px-2 py-0.5 text-[11px] font-semibold text-[#0891B2]">
                     Baru (&lt;90 hari)
                   </span>
                 ) : (
-                  <span className="text-[#a895a1]">—</span>
+                  <span className="text-[#91A0B5]">—</span>
                 )}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <p className="border-t border-[#f7eef1] px-3 py-2 text-[11px] text-[#9d8a97]">
-        🔥 = growth ≥25%. Diurutkan by growth. Produk "Baru" = launch &lt;90 hari. Sumber: product/rank
+      <p className="border-t border-[#EDF3F8] px-3 py-2 text-[11px] text-[#7A8AA3]">
+        🔥 = growth ≥25%. Diurutkan by growth. Produk &quot;Baru&quot; = launch &lt;90 hari. Sumber: product/rank
         (sort=revenue_growth_rate) + product/detail (launch_date).
       </p>
     </div>

@@ -14,7 +14,7 @@ import {
   rollupCampaigns,
   sumDaily,
 } from "@/lib/gmv-max/aggregate";
-import { formatCurrency, formatNumber, formatPercentDelta, formatRoi } from "@/lib/gmv-max/format";
+import { formatCurrency, formatNumber, formatRoi } from "@/lib/gmv-max/format";
 import { RoiTrendChart } from "@/app/gmv-max/roi-trend-chart";
 import { CampaignTable } from "@/app/gmv-max/campaign-table";
 import { ProductTable } from "@/app/gmv-max/product-table";
@@ -97,20 +97,20 @@ export default async function GmvMaxPage({
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-10">
-      <div className="mb-4 inline-flex items-center gap-2 rounded-none bg-white px-3 py-1 text-xs font-semibold text-[#8154b6] ring-1 ring-[#c4c2f2]">
-        <span className="h-2 w-2 rounded-none bg-[#f0466d]" />
+      <div className="mb-4 inline-flex items-center gap-2 rounded-none bg-white px-3 py-1 text-xs font-semibold text-[#0891B2] ring-1 ring-[#BFDBFE]">
+        <span className="h-2 w-2 rounded-none bg-[#2563EB]" />
         Mockup mode — data dummy, belum tersambung Supabase/TikTok API
       </div>
-      <h1 className="font-serif text-3xl font-semibold tracking-tight text-[#342d32]">
+      <h1 className="font-serif text-3xl font-semibold tracking-tight text-[#14213D]">
         GMV Max <span className="gfx-text-gradient">Command Center</span>
       </h1>
-      <p className="mt-1 text-sm text-[#9d8a97]">
+      <p className="mt-1 text-sm text-[#7A8AA3]">
         Ringkasan harian buat performance marketing & leadership — cost, ROI vs target, kesehatan
         campaign, produk, creative, dan LIVE, dalam satu layar.
       </p>
 
       <form className="gfx-filter-bar mt-6 flex flex-wrap items-end gap-4 p-4">
-        <label className="flex flex-col text-sm text-[#6b5a66]">
+        <label className="flex flex-col text-sm text-[#4B5D78]">
           Brand
           <select name="brand" defaultValue={filter.brand ?? ""} className="gfx-select mt-1">
             <option value="">Semua brand</option>
@@ -121,7 +121,7 @@ export default async function GmvMaxPage({
             ))}
           </select>
         </label>
-        <label className="flex flex-col text-sm text-[#6b5a66]">
+        <label className="flex flex-col text-sm text-[#4B5D78]">
           Tipe
           <select name="type" defaultValue={filter.promotionType ?? ""} className="gfx-select mt-1">
             <option value="">Product + LIVE</option>
@@ -129,11 +129,11 @@ export default async function GmvMaxPage({
             <option value="LIVE_GMV_MAX">LIVE GMV Max</option>
           </select>
         </label>
-        <label className="flex flex-col text-sm text-[#6b5a66]">
+        <label className="flex flex-col text-sm text-[#4B5D78]">
           Dari
           <input type="date" name="from" defaultValue={filter.from} className="gfx-input mt-1" />
         </label>
-        <label className="flex flex-col text-sm text-[#6b5a66]">
+        <label className="flex flex-col text-sm text-[#4B5D78]">
           Sampai
           <input type="date" name="to" defaultValue={filter.to} className="gfx-input mt-1" />
         </label>
@@ -209,14 +209,14 @@ export default async function GmvMaxPage({
               <tbody>
                 {brandRollups.map((b) => (
                   <tr key={b.brand} className="gfx-row-border">
-                    <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#342d32]">{b.brand}</td>
-                    <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">
+                    <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#14213D]">{b.brand}</td>
+                    <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">
                       {b.activeCampaignCount}/{b.campaignCount}
                     </td>
-                    <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatCurrency(b.cost)}</td>
-                    <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatCurrency(b.grossRevenue)}</td>
-                    <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatNumber(b.orders)}</td>
-                    <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#f0466d]">{formatRoi(b.roi)}</td>
+                    <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatCurrency(b.cost)}</td>
+                    <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatCurrency(b.grossRevenue)}</td>
+                    <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(b.orders)}</td>
+                    <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#2563EB]">{formatRoi(b.roi)}</td>
                   </tr>
                 ))}
               </tbody>

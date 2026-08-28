@@ -34,10 +34,10 @@ export function EfficiencyMatrix({ shops }: { shops: Shop[] }) {
         </thead>
         <tbody>
           {rows.map((r: EfficiencyRow) => (
-            <tr key={r.shopName} className={`gfx-row-border ${r.isGlow ? "bg-[#fdf0f3]/40" : ""}`}>
+            <tr key={r.shopName} className={`gfx-row-border ${r.isGlow ? "bg-[#EFF6FF]/40" : ""}`}>
               <td className="px-3 py-2">
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-[#342d32]">{r.shopName}</span>
+                  <span className="font-semibold text-[#14213D]">{r.shopName}</span>
                   <GlowChip name={r.shopName} />
                 </div>
               </td>
@@ -45,7 +45,7 @@ export function EfficiencyMatrix({ shops }: { shops: Shop[] }) {
                 const best = isBest(rows, r, c.key);
                 return (
                   <td key={c.key} className="whitespace-nowrap px-3 py-2">
-                    <span className={`font-medium ${best ? "text-emerald-700" : "text-[#6b5a66]"}`}>
+                    <span className={`font-medium ${best ? "text-emerald-700" : "text-[#4B5D78]"}`}>
                       {formatIdrCompact(r[c.key] as number)}
                     </span>
                     {best && <span className="ml-1 text-[10px] text-emerald-600">★</span>}
@@ -56,7 +56,7 @@ export function EfficiencyMatrix({ shops }: { shops: Shop[] }) {
           ))}
         </tbody>
       </table>
-      <p className="border-t border-[#f7eef1] px-3 py-2 text-[11px] text-[#9d8a97]">
+      <p className="border-t border-[#EDF3F8] px-3 py-2 text-[11px] text-[#7A8AA3]">
         ★ = tertinggi di benchmark. Rasio tinggi = efisien per unit channel; Glow FX di-highlight.
         Kolom ini derived dari field shop/detail (revenue ÷ jumlah channel), bukan field API mentah.
       </p>

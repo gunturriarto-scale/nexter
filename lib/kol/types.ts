@@ -97,3 +97,85 @@ export interface TrendingSound {
   usageCount: number;
   growthPct: number;
 }
+
+// --- TikTok Shop Affiliate Seller OpenAPI mock layer ---
+//
+// Field names below are intentionally limited to fields confirmed in the
+// bundled Affiliate Seller / Analytics OAS. The newest online creator
+// performance document is 202608, while the bundled schema currently covers
+// 202508; verify the live 202608 schema before wiring production responses.
+
+export interface AffiliateCreatorPerformance {
+  creatorOpenId: string;
+  username: string;
+  nickname: string;
+  avatarSeed: string;
+  followerCount: number;
+  gmv: number;
+  videoGmv: number;
+  liveGmv: number;
+  unitsSold: number;
+  gpm: number;
+  avgCommissionRate: number;
+  videoEngagementRate: number;
+  liveEngagementRate: number;
+  postRate: number;
+  pps: number;
+  rating: number;
+  brandCollaborationCount: number;
+  promotedProductNum: number;
+}
+
+export interface AffiliateVideoPerformance {
+  videoId: string;
+  username: string;
+  title: string;
+  views: number;
+  gmv: number;
+  gpm: number;
+  skuOrders: number;
+  itemsSold: number;
+  clickThroughRate: number;
+  products: string[];
+}
+
+export interface AffiliateOrderSummary {
+  orderId: string;
+  creatorUsername: string;
+  productName: string;
+  contentType: "VIDEO" | "LIVE" | "SHOWCASE";
+  status: "PROCESSING" | "COMPLETED" | "CANCELLED" | "FROZEN" | "DEDUCTED";
+  quantity: number;
+  returnedQuantity: number;
+  refundedQuantity: number;
+  commissionBase: number;
+  paidCommission: number;
+  commissionRate: number;
+}
+
+export interface AffiliateSampleApplication {
+  applicationId: string;
+  creatorUsername: string;
+  creatorNickname: string;
+  productName: string;
+  status: "PENDING" | "AWAITING_SHIPMENT" | "SHIPPED" | "COMPLETED" | "REJECTED";
+  fulfillmentStatus: "PENDING" | "FULFILLED" | "UNFULFILLED";
+  followerCount: number;
+  creatorGmv30d: number;
+  medianShoppableVideoViews: number;
+  fulfillmentPercentage: number;
+  commissionRate: number;
+  shipmentDeadline: string;
+}
+
+export interface AffiliateCollaborationSummary {
+  collaborationId: string;
+  name: string;
+  type: "OPEN" | "TARGET";
+  status: "NORMAL" | "ONGOING" | "TERMINATING" | "EXPIRED";
+  productCount: number;
+  invitedCreatorCount: number | null;
+  showcaseCreatorCount: number;
+  contentCreatorCount: number;
+  hasFreeSample: boolean;
+}

@@ -1,4 +1,9 @@
 import {
+  AffiliateCollaborationSummary,
+  AffiliateCreatorPerformance,
+  AffiliateOrderSummary,
+  AffiliateSampleApplication,
+  AffiliateVideoPerformance,
   KolCreator,
   KolDiscoveryCandidate,
   KolTrackedPost,
@@ -107,4 +112,42 @@ export const MOCK_TRENDING_SOUNDS: TrendingSound[] = [
   { brand: "Glow FX", soundName: "60 Second Skincare", artistName: "Ambient Beats", usageCount: 120000, growthPct: 67 },
   { brand: "Glow FX", soundName: "Glow Up Anthem", artistName: "DJ Nova", usageCount: 340000, growthPct: 45 },
   { brand: "Glow FX", soundName: "Soft Girl Era", artistName: "Mila Sound", usageCount: 890000, growthPct: 12 },
+];
+
+export const MOCK_AFFILIATE_CREATORS: AffiliateCreatorPerformance[] = [
+  { creatorOpenId: "coid-kulitsehat", username: "@kulitsehat.id", nickname: "Kulit Sehat ID", avatarSeed: "kulitsehat.id", followerCount: 620000, gmv: 486_400_000, videoGmv: 321_100_000, liveGmv: 165_300_000, unitsSold: 3980, gpm: 812_000, avgCommissionRate: 12, videoEngagementRate: 7.8, liveEngagementRate: 5.4, postRate: 84, pps: 4.7, rating: 4.8, brandCollaborationCount: 42, promotedProductNum: 118 },
+  { creatorOpenId: "coid-dermaid", username: "@dermaid.review", nickname: "Dermaid Review", avatarSeed: "dermaid.review", followerCount: 340000, gmv: 354_900_000, videoGmv: 298_600_000, liveGmv: 56_300_000, unitsSold: 2841, gpm: 995_000, avgCommissionRate: 14, videoEngagementRate: 8.2, liveEngagementRate: 4.8, postRate: 76, pps: 4.5, rating: 4.9, brandCollaborationCount: 31, promotedProductNum: 82 },
+  { creatorOpenId: "coid-tia", username: "@glow.by.tia", nickname: "Glow by Tia", avatarSeed: "glow.by.tia", followerCount: 180000, gmv: 218_700_000, videoGmv: 187_200_000, liveGmv: 31_500_000, unitsSold: 1912, gpm: 743_000, avgCommissionRate: 15, videoEngagementRate: 9.1, liveEngagementRate: 6.2, postRate: 91, pps: 4.8, rating: 4.7, brandCollaborationCount: 18, promotedProductNum: 54 },
+  { creatorOpenId: "coid-serumdiaries", username: "@serumdiaries", nickname: "Serum Diaries", avatarSeed: "serumdiaries", followerCount: 32000, gmv: 96_800_000, videoGmv: 96_800_000, liveGmv: 0, unitsSold: 876, gpm: 1_100_000, avgCommissionRate: 16, videoEngagementRate: 10.6, liveEngagementRate: 0, postRate: 88, pps: 4.6, rating: 4.9, brandCollaborationCount: 9, promotedProductNum: 27 },
+  { creatorOpenId: "coid-riceandglow", username: "@riceandglow", nickname: "Rice & Glow Diary", avatarSeed: "riceandglow", followerCount: 7200, gmv: 41_200_000, videoGmv: 41_200_000, liveGmv: 0, unitsSold: 402, gpm: 916_000, avgCommissionRate: 18, videoEngagementRate: 12.4, liveEngagementRate: 0, postRate: 94, pps: 4.4, rating: 4.8, brandCollaborationCount: 4, promotedProductNum: 13 },
+];
+
+export const MOCK_AFFILIATE_VIDEOS: AffiliateVideoPerformance[] = [
+  { videoId: "7401009", username: "@kulitsehat.id", title: "Acne Pure Serum — review 30 hari", views: 610000, gmv: 142_400_000, gpm: 233_443, skuOrders: 1184, itemsSold: 1260, clickThroughRate: 4.8, products: ["Acne Pure Serum 20mL"] },
+  { videoId: "7401007", username: "@dermaid.review", title: "Testing Glow Bomb Serum 14 hari", views: 356000, gmv: 118_900_000, gpm: 333_989, skuOrders: 923, itemsSold: 1004, clickThroughRate: 5.6, products: ["Glow Bomb Serum 20mL"] },
+  { videoId: "7401008", username: "@glow.by.tia", title: "7 hari barrier repair moisturizer", views: 142000, gmv: 76_300_000, gpm: 537_324, skuOrders: 612, itemsSold: 651, clickThroughRate: 6.9, products: ["Barrier Repair Moisturizer"] },
+  { videoId: "7401012", username: "@serumdiaries", title: "Peeling serum 60 detik", views: 88000, gmv: 51_800_000, gpm: 588_636, skuOrders: 408, itemsSold: 433, clickThroughRate: 7.4, products: ["17% Total Acids Peeling Serum"] },
+  { videoId: "7401013", username: "@riceandglow", title: "Rice toner: beneran bikin glow?", views: 45000, gmv: 28_600_000, gpm: 635_556, skuOrders: 219, itemsSold: 237, clickThroughRate: 8.1, products: ["Glow Bomb Rice Toner"] },
+];
+
+export const MOCK_AFFILIATE_ORDERS: AffiliateOrderSummary[] = [
+  { orderId: "57601", creatorUsername: "@kulitsehat.id", productName: "Acne Pure Serum 20mL", contentType: "VIDEO", status: "COMPLETED", quantity: 1260, returnedQuantity: 31, refundedQuantity: 18, commissionBase: 142_400_000, paidCommission: 17_088_000, commissionRate: 12 },
+  { orderId: "57602", creatorUsername: "@dermaid.review", productName: "Glow Bomb Serum 20mL", contentType: "VIDEO", status: "COMPLETED", quantity: 1004, returnedQuantity: 22, refundedQuantity: 11, commissionBase: 118_900_000, paidCommission: 16_646_000, commissionRate: 14 },
+  { orderId: "57603", creatorUsername: "@glow.by.tia", productName: "Barrier Repair Moisturizer", contentType: "VIDEO", status: "PROCESSING", quantity: 651, returnedQuantity: 5, refundedQuantity: 3, commissionBase: 76_300_000, paidCommission: 11_445_000, commissionRate: 15 },
+  { orderId: "57604", creatorUsername: "@kulitsehat.id", productName: "Glow Bomb Rice Toner", contentType: "LIVE", status: "COMPLETED", quantity: 492, returnedQuantity: 14, refundedQuantity: 6, commissionBase: 58_700_000, paidCommission: 7_044_000, commissionRate: 12 },
+  { orderId: "57605", creatorUsername: "@serumdiaries", productName: "17% Total Acids Peeling Serum", contentType: "SHOWCASE", status: "DEDUCTED", quantity: 433, returnedQuantity: 19, refundedQuantity: 12, commissionBase: 51_800_000, paidCommission: 7_456_000, commissionRate: 16 },
+];
+
+export const MOCK_AFFILIATE_SAMPLES: AffiliateSampleApplication[] = [
+  { applicationId: "sa-201", creatorUsername: "@barrierfixdiary", creatorNickname: "Barrier Fix Diary", productName: "Barrier Repair Moisturizer", status: "PENDING", fulfillmentStatus: "PENDING", followerCount: 58000, creatorGmv30d: 74_200_000, medianShoppableVideoViews: 62000, fulfillmentPercentage: 92, commissionRate: 15, shipmentDeadline: isoDaysFromNow(2) },
+  { applicationId: "sa-202", creatorUsername: "@acnefreejourney", creatorNickname: "Acne Free Journey", productName: "Acne Pure Serum 20mL", status: "AWAITING_SHIPMENT", fulfillmentStatus: "PENDING", followerCount: 91000, creatorGmv30d: 118_500_000, medianShoppableVideoViews: 87000, fulfillmentPercentage: 96, commissionRate: 14, shipmentDeadline: isoDaysFromNow(1) },
+  { applicationId: "sa-203", creatorUsername: "@ceceliaskin", creatorNickname: "Cecelia Skin Diary", productName: "17% Total Acids Peeling Serum", status: "SHIPPED", fulfillmentStatus: "PENDING", followerCount: 35000, creatorGmv30d: 63_900_000, medianShoppableVideoViews: 54000, fulfillmentPercentage: 89, commissionRate: 16, shipmentDeadline: isoDaysFromNow(-1) },
+  { applicationId: "sa-204", creatorUsername: "@riceandglow", creatorNickname: "Rice & Glow Diary", productName: "Glow Bomb Rice Toner", status: "COMPLETED", fulfillmentStatus: "FULFILLED", followerCount: 7200, creatorGmv30d: 41_200_000, medianShoppableVideoViews: 45000, fulfillmentPercentage: 100, commissionRate: 18, shipmentDeadline: isoDaysFromNow(-12) },
+];
+
+export const MOCK_AFFILIATE_COLLABORATIONS: AffiliateCollaborationSummary[] = [
+  { collaborationId: "oc-101", name: "Glow FX Open Collaboration", type: "OPEN", status: "NORMAL", productCount: 6, invitedCreatorCount: null, showcaseCreatorCount: 184, contentCreatorCount: 73, hasFreeSample: true },
+  { collaborationId: "tc-201", name: "Acne Authority Q3", type: "TARGET", status: "ONGOING", productCount: 2, invitedCreatorCount: 42, showcaseCreatorCount: 31, contentCreatorCount: 18, hasFreeSample: true },
+  { collaborationId: "tc-202", name: "Rice Toner Launch", type: "TARGET", status: "ONGOING", productCount: 1, invitedCreatorCount: 28, showcaseCreatorCount: 19, contentCreatorCount: 11, hasFreeSample: true },
+  { collaborationId: "tc-203", name: "Barrier Repair Always-on", type: "TARGET", status: "ONGOING", productCount: 1, invitedCreatorCount: 35, showcaseCreatorCount: 27, contentCreatorCount: 16, hasFreeSample: false },
 ];

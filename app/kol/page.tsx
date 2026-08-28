@@ -1,4 +1,9 @@
 import {
+  MOCK_AFFILIATE_COLLABORATIONS,
+  MOCK_AFFILIATE_CREATORS,
+  MOCK_AFFILIATE_ORDERS,
+  MOCK_AFFILIATE_SAMPLES,
+  MOCK_AFFILIATE_VIDEOS,
   MOCK_BRANDS,
   MOCK_CREATORS,
   MOCK_DISCOVERY,
@@ -16,10 +21,11 @@ import { DiscoveryTable } from "@/app/kol/discovery-table";
 import { TierPerformanceTable } from "@/app/kol/tier-performance";
 import { ProductPerformanceTable } from "@/app/kol/product-performance";
 import { TrendingHashtagsTable, TrendingSoundsTable } from "@/app/kol/trends";
+import { AffiliateOverview } from "@/app/kol/affiliate-overview";
 
 export const dynamic = "force-dynamic";
 
-export default async function KolPage({
+export default async function CreatorPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | undefined }>;
@@ -64,20 +70,19 @@ export default async function KolPage({
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-10">
-      <div className="mb-4 inline-flex items-center gap-2 rounded-none bg-white px-3 py-1 text-xs font-semibold text-[#8154b6] ring-1 ring-[#c4c2f2]">
-        <span className="h-2 w-2 rounded-none bg-[#f0466d]" />
-        Mockup mode — data dummy, field = ScrapeCreators + KaloData + GMV Max
+      <div className="mb-4 inline-flex items-center gap-2 rounded-none bg-white px-3 py-1 text-xs font-semibold text-[#0891B2] ring-1 ring-[#BFDBFE]">
+        <span className="h-2 w-2 rounded-none bg-[#2563EB]" />
+        Mockup mode — official TikTok Shop OpenAPI field map
       </div>
-      <h1 className="font-serif text-3xl font-semibold tracking-tight text-[#342d32]">
-        KOL <span className="gfx-text-gradient">Command Center</span>
+      <h1 className="font-serif text-3xl font-semibold tracking-tight text-[#14213D]">
+        Creator <span className="gfx-text-gradient">Command Center</span>
       </h1>
-      <p className="mt-1 text-sm text-[#9d8a97]">
-        Roster kreator, tracked post, tren konten, dan kandidat kolaborasi — semua dari API yang bisa
-        ditarik (ScrapeCreators, KaloData, GMV Max).
+      <p className="mt-1 text-sm text-[#7A8AA3]">
+        Affiliate GMV, creator performance, collaboration, sample, commission, dan content attribution.
       </p>
 
       <form className="gfx-filter-bar mt-6 flex flex-wrap items-end gap-4 p-4">
-        <label className="flex flex-col text-sm text-[#6b5a66]">
+        <label className="flex flex-col text-sm text-[#4B5D78]">
           Brand
           <select name="brand" defaultValue={brand ?? ""} className="gfx-select mt-1">
             <option value="">Semua brand</option>
@@ -88,8 +93,8 @@ export default async function KolPage({
             ))}
           </select>
         </label>
-        <label className="flex flex-col text-sm text-[#6b5a66]">
-          Tier KOL
+        <label className="flex flex-col text-sm text-[#4B5D78]">
+          Tier Creator
           <select name="tier" defaultValue={tier ?? ""} className="gfx-select mt-1">
             <option value="">Semua tier</option>
             {TIER_ORDER.map((t) => (
@@ -99,7 +104,7 @@ export default async function KolPage({
             ))}
           </select>
         </label>
-        <label className="flex flex-col text-sm text-[#6b5a66]">
+        <label className="flex flex-col text-sm text-[#4B5D78]">
           Fokus produk
           <select name="product" defaultValue={product ?? ""} className="gfx-select mt-1 max-w-[260px]">
             <option value="">Semua produk</option>
@@ -115,9 +120,23 @@ export default async function KolPage({
         </button>
       </form>
 
+      <AffiliateOverview
+        creators={MOCK_AFFILIATE_CREATORS}
+        videos={MOCK_AFFILIATE_VIDEOS}
+        orders={MOCK_AFFILIATE_ORDERS}
+        samples={MOCK_AFFILIATE_SAMPLES}
+        collaborations={MOCK_AFFILIATE_COLLABORATIONS}
+      />
+
+      <section className="mt-12 border-t border-[#e8dce2] pt-8">
+        <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0891B2]">Enrichment layer</div>
+        <h2 className="gfx-section-title mt-1">Social signals + GMV Max overlay</h2>
+        <p className="gfx-section-desc mt-1">Data pendamping dari tracked posts, discovery source, dan paid creative matching.</p>
+      </section>
+
       <section className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         {[
-          { label: "KOL aktif", value: formatNumber(creators.length) },
+          { label: "Creator aktif", value: formatNumber(creators.length) },
           { label: "Tracked posts", value: formatNumber(posts.length) },
           { label: "Total views", value: formatCompact(totalViews) },
           { label: "Avg. engagement", value: `${avgEngagement.toFixed(1)}%` },
@@ -150,9 +169,9 @@ export default async function KolPage({
       )}
 
       <section className="mt-8">
-        <h2 className="gfx-section-title">Performa per kategori KOL</h2>
+        <h2 className="gfx-section-title">Performa per kategori Creator</h2>
         <p className="gfx-section-desc mt-1">
-          Klasifikasi Nano/Micro/Mid/Macro/Mega-KOL berdasarkan jumlah follower — bandingkan tier mana
+          Klasifikasi Nano/Micro/Mid/Macro/Mega Creator berdasarkan jumlah follower — bandingkan tier mana
           yang paling efisien (views, engagement) buat brand ini.
         </p>
         <div className="mt-3">
@@ -163,8 +182,8 @@ export default async function KolPage({
       <section className="mt-8">
         <h2 className="gfx-section-title">Performa per produk / SKU</h2>
         <p className="gfx-section-desc mt-1">
-          KOL dikelompokkan by produk yang jadi fokus kerjasamanya — lihat SKU mana yang paling banyak
-          didorong lewat KOL, dan seberapa efektif.
+          Creator dikelompokkan berdasarkan produk yang jadi fokus kolaborasinya — lihat SKU mana yang
+          paling banyak didorong lewat creator, dan seberapa efektif.
         </p>
         <div className="mt-3">
           <ProductPerformanceTable rows={productPerformance} />
@@ -172,9 +191,9 @@ export default async function KolPage({
       </section>
 
       <section className="mt-8">
-        <h2 className="gfx-section-title">Leaderboard KOL</h2>
+        <h2 className="gfx-section-title">Leaderboard Creator</h2>
         <p className="gfx-section-desc mt-1">
-          Diurutkan by total views. Kolom &quot;Paid (GMV Max)&quot; cuma keisi kalau ada video KOL ini yang
+          Diurutkan by total views. Kolom &quot;Paid (GMV Max)&quot; cuma keisi kalau ada video creator ini yang
           juga jalan sebagai creative berbayar.
         </p>
         <div className="mt-3">
@@ -185,7 +204,7 @@ export default async function KolPage({
       <section className="mt-8">
         <h2 className="gfx-section-title">Tracked post links</h2>
         <p className="gfx-section-desc mt-1">
-          Database link post yang dikumpulkan tim KOL sendiri, performa di-refresh berkala lewat
+          Database link post yang dikumpulkan tim Creator sendiri, performa di-refresh berkala lewat
           ScrapeCreators.
         </p>
         <div className="mt-3">
@@ -197,22 +216,22 @@ export default async function KolPage({
         <h2 className="gfx-section-title">Tren hashtag & sound naik daun</h2>
         <p className="gfx-section-desc mt-1">
           Dari ScrapeCreators (Search by Hashtag, Get Song Details) — sinyal buat nentuin arah konten &amp;
-          kandidat KOL berikutnya. 🔥 = growth ≥40% minggu ke minggu.
+          kandidat Creator berikutnya. 🔥 = growth ≥40% minggu ke minggu.
         </p>
         <div className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-2">
           <div>
-            <h3 className="mb-2 text-sm font-semibold text-[#9d8a97]">Hashtag</h3>
+            <h3 className="mb-2 text-sm font-semibold text-[#7A8AA3]">Hashtag</h3>
             <TrendingHashtagsTable hashtags={trendingHashtags} />
           </div>
           <div>
-            <h3 className="mb-2 text-sm font-semibold text-[#9d8a97]">Sound</h3>
+            <h3 className="mb-2 text-sm font-semibold text-[#7A8AA3]">Sound</h3>
             <TrendingSoundsTable sounds={trendingSounds} />
           </div>
         </div>
       </section>
 
       <section className="mt-8 mb-4">
-        <h2 className="gfx-section-title">Kandidat KOL baru</h2>
+        <h2 className="gfx-section-title">Kandidat Creator baru</h2>
         <p className="gfx-section-desc mt-1">
           Kolom &quot;Sumber tren&quot; nunjukin hashtag/sound mana yang munculin kandidat ini.
         </p>

@@ -50,21 +50,21 @@ export default function LiveGmvMaxPage() {
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-10">
-      <div className="mb-4 inline-flex items-center gap-2 rounded-none bg-white px-3 py-1 text-xs font-semibold text-[#8154b6] ring-1 ring-[#c4c2f2]">
-        <span className="h-2 w-2 rounded-none bg-[#f0466d]" />
+      <div className="mb-4 inline-flex items-center gap-2 rounded-none bg-white px-3 py-1 text-xs font-semibold text-[#0891B2] ring-1 ring-[#BFDBFE]">
+        <span className="h-2 w-2 rounded-none bg-[#2563EB]" />
         Mockup mode — data dummy, struktur field = TikTok Business API LIVE GMV Max
       </div>
-      <h1 className="font-serif text-3xl font-semibold tracking-tight text-[#342d32]">
+      <h1 className="font-serif text-3xl font-semibold tracking-tight text-[#14213D]">
         LIVE GMV Max <span className="gfx-text-gradient">Command Center</span>
       </h1>
-      <p className="mt-1 text-sm text-[#9d8a97]">
+      <p className="mt-1 text-sm text-[#7A8AA3]">
         Pantau semua livestream shopping ads campaign — cost, ROI vs target, live views, follows,
         dan performa tiap live session dalam satu layar.
       </p>
 
       {/* Filter bar (mock — mirrors the same fields as the real report filter) */}
       <form className="gfx-filter-bar mt-6 flex flex-wrap items-end gap-4 p-4">
-        <label className="flex flex-col text-sm text-[#6b5a66]">
+        <label className="flex flex-col text-sm text-[#4B5D78]">
           Brand
           <select className="gfx-select mt-1">
             {MOCK_BRANDS.map((b) => (
@@ -74,7 +74,7 @@ export default function LiveGmvMaxPage() {
             ))}
           </select>
         </label>
-        <label className="flex flex-col text-sm text-[#6b5a66]">
+        <label className="flex flex-col text-sm text-[#4B5D78]">
           Status live
           <select className="gfx-select mt-1">
             <option>Semua status</option>
@@ -82,11 +82,11 @@ export default function LiveGmvMaxPage() {
             <option>END</option>
           </select>
         </label>
-        <label className="flex flex-col text-sm text-[#6b5a66]">
+        <label className="flex flex-col text-sm text-[#4B5D78]">
           Dari
           <input type="date" className="gfx-input mt-1" defaultValue="2026-07-30" />
         </label>
-        <label className="flex flex-col text-sm text-[#6b5a66]">
+        <label className="flex flex-col text-sm text-[#4B5D78]">
           Sampai
           <input type="date" className="gfx-input mt-1" defaultValue="2026-08-12" />
         </label>
@@ -129,7 +129,7 @@ export default function LiveGmvMaxPage() {
         <h2 className="gfx-section-title">Live sessions</h2>
         <p className="gfx-section-desc mt-1">
           LIVE yang sedang berlangsung tampil paling atas. Data per room_id dari{" "}
-          <code className="rounded-none bg-[#fdf0f3] px-1 text-[#8154b6]">/gmv_max/report/get/</code>.
+          <code className="rounded-none bg-[#EFF6FF] px-1 text-[#0891B2]">/gmv_max/report/get/</code>.
         </p>
         <div className="mt-3">
           <LiveGrid sessions={sessions} />

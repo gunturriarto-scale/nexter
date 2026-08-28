@@ -26,28 +26,28 @@ export function LivestreamBenchmark({ lives }: { lives: Livestream[] }) {
         </thead>
         <tbody>
           {sorted.map((l) => (
-            <tr key={l.livestreamId} className={`gfx-row-border ${l.affiliatedBrand === "Glow FX" ? "bg-[#fdf0f3]/40" : ""}`}>
+            <tr key={l.livestreamId} className={`gfx-row-border ${l.affiliatedBrand === "Glow FX" ? "bg-[#EFF6FF]/40" : ""}`}>
               <td className="px-3 py-2">
-                <div className="font-semibold text-[#342d32]">{l.livestreamTitle}</div>
-                <div className="text-xs text-[#9d8a97]">{l.creatorHandle}</div>
+                <div className="font-semibold text-[#14213D]">{l.livestreamTitle}</div>
+                <div className="text-xs text-[#7A8AA3]">{l.creatorHandle}</div>
               </td>
               <td className="px-3 py-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-[#6b5a66]">{l.affiliatedBrand}</span>
+                  <span className="text-[#4B5D78]">{l.affiliatedBrand}</span>
                   <GlowChip name={l.affiliatedBrand} />
                 </div>
               </td>
-              <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#342d32]">{formatIdrCompact(l.revenue)}</td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatCompact(l.viewers)}</td>
-              <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#f0466d]">{formatGpm(l.gpm)}</td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatMsDuration(l.livestreamDuration * 1000)}</td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatNumber(l.productNumber)}</td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatIdrCompact(l.unitPrice)}</td>
+              <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#14213D]">{formatIdrCompact(l.revenue)}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatCompact(l.viewers)}</td>
+              <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#2563EB]">{formatGpm(l.gpm)}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatMsDuration(l.livestreamDuration * 1000)}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(l.productNumber)}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(l.unitPrice)}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      <p className="border-t border-[#f7eef1] px-3 py-2 text-[11px] text-[#9d8a97]">
+      <p className="border-t border-[#EDF3F8] px-3 py-2 text-[11px] text-[#7A8AA3]">
         GPM = revenue per 1000 viewers. Sumber: livestream/rank + livestream/detail. Benchmark strategi
         live kompetitor — durasi, produk yang dijual, dan efisiensi per viewer.
       </p>

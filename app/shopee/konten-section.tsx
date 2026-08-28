@@ -41,7 +41,7 @@ export function KontenSection({
           <Card>
             <TrendChart
               data={trend}
-              series={[{ key: "liveGmv", name: "Live GMV", color: "#f0466d", type: "bar", axis: "left" }]}
+              series={[{ key: "liveGmv", name: "Live GMV", color: "#2563EB", type: "bar", axis: "left" }]}
             />
           </Card>
         </div>
@@ -63,12 +63,12 @@ export function KontenSection({
             <tbody>
               {livestreams.map((l) => (
                 <tr key={l.sessionId} className="gfx-row-border">
-                  <td className="px-3 py-2 font-medium text-[#342d32]">{l.title}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatDateTime(l.startTime)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{l.durationMin} menit</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatNumber(l.views)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#f0466d]">{formatIdrCompact(l.gmv)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatNumber(l.orders)}</td>
+                  <td className="px-3 py-2 font-medium text-[#14213D]">{l.title}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatDateTime(l.startTime)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{l.durationMin} menit</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(l.views)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#2563EB]">{formatIdrCompact(l.gmv)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(l.orders)}</td>
                 </tr>
               ))}
             </tbody>
@@ -92,12 +92,12 @@ export function KontenSection({
             <tbody>
               {videos.map((v) => (
                 <tr key={v.videoId} className="gfx-row-border">
-                  <td className="px-3 py-2 font-medium text-[#342d32]">{v.title}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatDateTime(v.publishTime)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatNumber(v.views)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatNumber(v.likes)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#f0466d]">{formatIdrCompact(v.gmv)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatNumber(v.orders)}</td>
+                  <td className="px-3 py-2 font-medium text-[#14213D]">{v.title}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatDateTime(v.publishTime)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(v.views)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(v.likes)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#2563EB]">{formatIdrCompact(v.gmv)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(v.orders)}</td>
                 </tr>
               ))}
             </tbody>

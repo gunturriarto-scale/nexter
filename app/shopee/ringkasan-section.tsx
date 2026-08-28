@@ -68,8 +68,8 @@ export function RingkasanSection({
             <TrendChart
               data={trend}
               series={[
-                { key: "gmv", name: "GMV", color: "#f6a7bc", type: "bar", axis: "left" },
-                { key: "orders", name: "Orders", color: "#f0466d", type: "line", axis: "right" },
+                { key: "gmv", name: "GMV", color: "#93C5FD", type: "bar", axis: "left" },
+                { key: "orders", name: "Orders", color: "#2563EB", type: "line", axis: "right" },
               ]}
             />
           </Card>
@@ -96,18 +96,18 @@ export function RingkasanSection({
             <tbody>
               {paretoTop10.slice(0, 10).map((row, i) => (
                 <tr key={row.product.itemId} className="gfx-row-border">
-                  <td className="whitespace-nowrap px-3 py-2 text-[#9d8a97]">{i + 1}</td>
-                  <td className="px-3 py-2 font-medium text-[#342d32]">{row.product.itemName}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatIdrCompact(row.revenue)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#7A8AA3]">{i + 1}</td>
+                  <td className="px-3 py-2 font-medium text-[#14213D]">{row.product.itemName}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(row.revenue)}</td>
                   <td className="whitespace-nowrap px-3 py-2">
                     <div className="flex items-center gap-2">
-                      <div className="h-1.5 w-16 overflow-hidden rounded-none bg-[#f7eef1]">
+                      <div className="h-1.5 w-16 overflow-hidden rounded-none bg-[#EDF3F8]">
                         <div
-                          className="h-full bg-gradient-to-r from-[#f0466d] to-[#8154b6]"
+                          className="h-full bg-gradient-to-r from-[#2563EB] to-[#0891B2]"
                           style={{ width: `${Math.min(row.cumulativePct, 100)}%` }}
                         />
                       </div>
-                      <span className="text-[#6b5a66]">{row.cumulativePct.toFixed(0)}%</span>
+                      <span className="text-[#4B5D78]">{row.cumulativePct.toFixed(0)}%</span>
                     </div>
                   </td>
                 </tr>

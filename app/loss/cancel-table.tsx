@@ -32,14 +32,14 @@ export function CancelTable({ rows }: { rows: Cancellation[] }) {
         <tbody>
           {sorted.length === 0 && (
             <tr>
-              <td className="px-3 py-4 text-[#9d8a97]" colSpan={11}>
+              <td className="px-3 py-4 text-[#7A8AA3]" colSpan={11}>
                 Belum ada cancellation untuk filter ini.
               </td>
             </tr>
           )}
           {sorted.map((r) => (
             <tr key={r.cancelId} className="gfx-row-border">
-              <td className="whitespace-nowrap px-3 py-2 font-mono text-xs text-[#342d32]">
+              <td className="whitespace-nowrap px-3 py-2 font-mono text-xs text-[#14213D]">
                 {r.orderId}
               </td>
               <td className="whitespace-nowrap px-3 py-2">
@@ -51,21 +51,21 @@ export function CancelTable({ rows }: { rows: Cancellation[] }) {
               <td className="whitespace-nowrap px-3 py-2">
                 <RoleChip role={r.role} />
               </td>
-              <td className="px-3 py-2 text-[#6b5a66]">{r.cancelReasonText}</td>
-              <td className="px-3 py-2 text-[#6b5a66]">
+              <td className="px-3 py-2 text-[#4B5D78]">{r.cancelReasonText}</td>
+              <td className="px-3 py-2 text-[#4B5D78]">
                 {r.lineItems[0]?.productName ?? "—"}
                 {r.lineItems.length > 1 && ` (+${r.lineItems.length - 1})`}
               </td>
-              <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#f0466d]">
+              <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#2563EB]">
                 {formatCurrency2(r.refundAmount.refundTotal)}
               </td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">
+              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">
                 {formatCurrency2(r.refundAmount.refundSubtotal)}
               </td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">
+              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">
                 {formatCurrency2(r.refundAmount.refundShippingFee)}
               </td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">
+              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">
                 {formatDateTime(r.createTime)}
               </td>
               <td className="whitespace-nowrap px-3 py-2">
@@ -74,7 +74,7 @@ export function CancelTable({ rows }: { rows: Cancellation[] }) {
                     {formatDateTime(r.sellerNextAction.deadline)}
                   </span>
                 ) : (
-                  <span className="text-[#a895a1]">—</span>
+                  <span className="text-[#91A0B5]">—</span>
                 )}
               </td>
             </tr>

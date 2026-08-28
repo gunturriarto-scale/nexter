@@ -82,7 +82,7 @@ export function RoiProtectionChip({ status }: { status: RoiProtectionStatus }) {
   );
 }
 
-export function ProductStatusChip(_: { status: string }) {
+export function ProductStatusChip() {
   return null;
 }
 
@@ -104,7 +104,7 @@ export function alertCardClass(severity: AlertSeverity) {
 export function Card({ title, children }: { title?: string; children: React.ReactNode }) {
   return (
     <div className="gfx-card p-5">
-      {title && <h3 className="mb-3 font-serif text-base font-semibold text-[#342d32]">{title}</h3>}
+      {title && <h3 className="mb-3 font-serif text-base font-semibold text-[#14213D]">{title}</h3>}
       {children}
     </div>
   );

@@ -20,7 +20,7 @@ export function GrowthBadge({ pct }: { pct: number }) {
 export function GlowChip({ name }: { name: string }) {
   if (name === "Glow FX") {
     return (
-      <span className="inline-flex items-center gap-1 rounded-none bg-gradient-to-r from-[#f0466d]/12 to-[#8154b6]/12 px-2 py-0.5 text-[10px] font-bold text-[#f0466d] ring-1 ring-[#f6a7bc]/50">
+      <span className="inline-flex items-center gap-1 rounded-none bg-gradient-to-r from-[#2563EB]/12 to-[#0891B2]/12 px-2 py-0.5 text-[10px] font-bold text-[#2563EB] ring-1 ring-[#93C5FD]/50">
         GLOW FX
       </span>
     );
@@ -47,7 +47,7 @@ export function insightCardClass(severity: IntelSeverity) {
 export function Card({ title, children }: { title?: string; children: React.ReactNode }) {
   return (
     <div className="gfx-card p-5">
-      {title && <h3 className="mb-3 font-serif text-base font-semibold text-[#342d32]">{title}</h3>}
+      {title && <h3 className="mb-3 font-serif text-base font-semibold text-[#14213D]">{title}</h3>}
       {children}
     </div>
   );

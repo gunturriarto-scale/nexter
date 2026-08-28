@@ -11,7 +11,7 @@ export function LiveStatusBadge({ status }: { status: LiveStatus }) {
     );
   }
   return (
-    <span className="rounded-none bg-[#f7eef1] px-2 py-0.5 text-[11px] font-medium text-[#9d8a97]">
+    <span className="rounded-none bg-[#EDF3F8] px-2 py-0.5 text-[11px] font-medium text-[#7A8AA3]">
       Selesai
     </span>
   );
@@ -43,7 +43,7 @@ export function RoiProtectionChip({ status }: { status: "IN_EFFECT" | "NOT_ELIGI
 
 export function BidTypeChip({ bidType }: { bidType: "CUSTOM" | "NO_BID" }) {
   return (
-    <span className="rounded-none bg-[#fdf0f3] px-1.5 py-0.5 text-[10px] font-medium text-[#8154b6]">
+    <span className="rounded-none bg-[#EFF6FF] px-1.5 py-0.5 text-[10px] font-medium text-[#0891B2]">
       {bidType === "CUSTOM" ? "Target ROI" : "Max delivery"}
     </span>
   );
@@ -68,7 +68,7 @@ export function alertCardClass(severity: LiveAlertSeverity) {
 export function Card({ title, children }: { title?: string; children: React.ReactNode }) {
   return (
     <div className="gfx-card p-5">
-      {title && <h3 className="mb-3 font-serif text-base font-semibold text-[#342d32]">{title}</h3>}
+      {title && <h3 className="mb-3 font-serif text-base font-semibold text-[#14213D]">{title}</h3>}
       {children}
     </div>
   );

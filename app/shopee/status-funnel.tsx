@@ -15,13 +15,13 @@ export function StatusFunnel({ rows }: { rows: FunnelBarRow[] }) {
       <div className="flex flex-col gap-3">
         {rows.map((r) => (
           <div key={r.label}>
-            <div className="flex items-center justify-between text-xs text-[#6b5a66]">
-              <span className="font-medium text-[#342d32]">{r.label}</span>
+            <div className="flex items-center justify-between text-xs text-[#4B5D78]">
+              <span className="font-medium text-[#14213D]">{r.label}</span>
               <span>
                 {r.count} · {r.pct.toFixed(0)}%
               </span>
             </div>
-            <div className="mt-1 h-2.5 w-full overflow-hidden rounded-none bg-[#f7eef1]">
+            <div className="mt-1 h-2.5 w-full overflow-hidden rounded-none bg-[#EDF3F8]">
               <div
                 className={`h-full ${r.colorClass}`}
                 style={{ width: `${Math.max((r.count / max) * 100, r.count > 0 ? 2 : 0)}%` }}

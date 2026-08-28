@@ -7,11 +7,11 @@ export type KolTier = "Nano" | "Micro" | "Mid" | "Macro" | "Mega";
 export const TIER_ORDER: KolTier[] = ["Nano", "Micro", "Mid", "Macro", "Mega"];
 
 export const TIER_LABEL: Record<KolTier, string> = {
-  Nano: "Nano-KOL",
-  Micro: "Micro-KOL",
-  Mid: "Mid-tier KOL",
-  Macro: "Macro-KOL",
-  Mega: "Mega-KOL",
+  Nano: "Nano Creator",
+  Micro: "Micro Creator",
+  Mid: "Mid-tier Creator",
+  Macro: "Macro Creator",
+  Mega: "Mega Creator",
 };
 
 export const TIER_RANGE_LABEL: Record<KolTier, string> = {

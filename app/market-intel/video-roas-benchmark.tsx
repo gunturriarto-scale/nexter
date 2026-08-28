@@ -1,5 +1,5 @@
 import { Video } from "@/lib/market-intel/benchmark-types";
-import { formatIdrCompact, formatCompact, formatNumber, formatPct } from "@/lib/market-intel/format";
+import { formatIdrCompact, formatCompact } from "@/lib/market-intel/format";
 import { GlowChip } from "@/app/market-intel/ui";
 
 function roasColor(roas: number): string {
@@ -26,25 +26,25 @@ export function VideoRoasBenchmark({ videos }: { videos: Video[] }) {
           </thead>
           <tbody>
             {ads.map((v) => (
-              <tr key={v.videoId} className={`gfx-row-border ${v.affiliatedBrand === "Glow FX" ? "bg-[#fdf0f3]/40" : ""}`}>
+              <tr key={v.videoId} className={`gfx-row-border ${v.affiliatedBrand === "Glow FX" ? "bg-[#EFF6FF]/40" : ""}`}>
                 <td className="px-3 py-2">
-                  <div className="font-semibold text-[#342d32]">{v.videoTitle}</div>
-                  <div className="text-xs text-[#9d8a97]">{v.belongedCreatorHandle} · {v.duration}s</div>
+                  <div className="font-semibold text-[#14213D]">{v.videoTitle}</div>
+                  <div className="text-xs text-[#7A8AA3]">{v.belongedCreatorHandle} · {v.duration}s</div>
                 </td>
                 <td className="px-3 py-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-[#6b5a66]">{v.affiliatedBrand}</span>
+                    <span className="text-[#4B5D78]">{v.affiliatedBrand}</span>
                     <GlowChip name={v.affiliatedBrand} />
                   </div>
                 </td>
-                <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#342d32]">{formatIdrCompact(v.revenue)}</td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatCompact(v.views)}</td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatIdrCompact(v.videoGpm)}</td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatCompact(v.adsViews)}</td>
+                <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#14213D]">{formatIdrCompact(v.revenue)}</td>
+                <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatCompact(v.views)}</td>
+                <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(v.videoGpm)}</td>
+                <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatCompact(v.adsViews)}</td>
                 <td className="whitespace-nowrap px-3 py-2">
                   <span className={`font-bold ${roasColor(v.adsRoas)}`}>{v.adsRoas.toFixed(2)}x</span>
                 </td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatCompact(v.diggCount)}</td>
+                <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatCompact(v.diggCount)}</td>
               </tr>
             ))}
           </tbody>
@@ -53,7 +53,7 @@ export function VideoRoasBenchmark({ videos }: { videos: Video[] }) {
 
       {organic.length > 0 && (
         <div>
-          <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#9d8a97]">Video organik (tanpa ads)</div>
+          <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#7A8AA3]">Video organik (tanpa ads)</div>
           <div className="gfx-table-wrap overflow-x-auto">
             <table className="w-full min-w-[760px] text-left text-sm">
               <thead>
@@ -65,16 +65,16 @@ export function VideoRoasBenchmark({ videos }: { videos: Video[] }) {
               </thead>
               <tbody>
                 {organic.map((v) => (
-                  <tr key={v.videoId} className={`gfx-row-border ${v.affiliatedBrand === "Glow FX" ? "bg-[#fdf0f3]/40" : ""}`}>
+                  <tr key={v.videoId} className={`gfx-row-border ${v.affiliatedBrand === "Glow FX" ? "bg-[#EFF6FF]/40" : ""}`}>
                     <td className="px-3 py-2">
-                      <div className="font-semibold text-[#342d32]">{v.videoTitle}</div>
-                      <div className="text-xs text-[#9d8a97]">{v.belongedCreatorHandle}</div>
+                      <div className="font-semibold text-[#14213D]">{v.videoTitle}</div>
+                      <div className="text-xs text-[#7A8AA3]">{v.belongedCreatorHandle}</div>
                     </td>
-                    <td className="px-3 py-2 text-[#6b5a66]">{v.affiliatedBrand}</td>
-                    <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#342d32]">{formatIdrCompact(v.revenue)}</td>
-                    <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatCompact(v.views)}</td>
-                    <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatIdrCompact(v.videoGpm)}</td>
-                    <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatCompact(v.diggCount)}</td>
+                    <td className="px-3 py-2 text-[#4B5D78]">{v.affiliatedBrand}</td>
+                    <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#14213D]">{formatIdrCompact(v.revenue)}</td>
+                    <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatCompact(v.views)}</td>
+                    <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(v.videoGpm)}</td>
+                    <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatCompact(v.diggCount)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -82,7 +82,7 @@ export function VideoRoasBenchmark({ videos }: { videos: Video[] }) {
           </div>
         </div>
       )}
-      <p className="text-[11px] text-[#9d8a97]">
+      <p className="text-[11px] text-[#7A8AA3]">
         Ads ROAS = revenue iklan ÷ cost. GPM = revenue per 1000 views. Sumber: video/rank (sort=ads_roas).
         Ini benchmark efisiensi konten iklan kompetitor.
       </p>

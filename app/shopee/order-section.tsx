@@ -7,8 +7,8 @@ import { StatusFunnel } from "@/app/shopee/status-funnel";
 const STATUS_COLOR: Record<OrderStatus, string> = {
   UNPAID: "bg-amber-300",
   PENDING: "bg-amber-400",
-  READY_TO_SHIP: "bg-gradient-to-r from-[#f0466d] to-[#8154b6]",
-  PROCESSED: "bg-[#8154b6]",
+  READY_TO_SHIP: "bg-gradient-to-r from-[#2563EB] to-[#0891B2]",
+  PROCESSED: "bg-[#0891B2]",
   SHIPPED: "bg-blue-400",
   TO_CONFIRM_RECEIVE: "bg-blue-500",
   COMPLETED: "bg-emerald-500",
@@ -111,9 +111,9 @@ export function OrderSection({
             <tbody>
               {actionable.slice(0, 15).map((a) => (
                 <tr key={a.order.orderSn} className="gfx-row-border">
-                  <td className="whitespace-nowrap px-3 py-2 font-medium text-[#342d32]">{a.order.orderSn}</td>
-                  <td className="px-3 py-2 text-[#6b5a66]">{a.order.items[0]?.itemName}{a.order.items.length > 1 ? ` +${a.order.items.length - 1} lainnya` : ""}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatIdrCompact(a.order.totalAmount)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 font-medium text-[#14213D]">{a.order.orderSn}</td>
+                  <td className="px-3 py-2 text-[#4B5D78]">{a.order.items[0]?.itemName}{a.order.items.length > 1 ? ` +${a.order.items.length - 1} lainnya` : ""}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(a.order.totalAmount)}</td>
                   <td className="whitespace-nowrap px-3 py-2">
                     {a.order.shipByDate && formatDateTime(a.order.shipByDate)}
                   </td>
@@ -127,7 +127,7 @@ export function OrderSection({
               ))}
               {actionable.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-3 py-6 text-center text-[#9d8a97]">
+                  <td colSpan={5} className="px-3 py-6 text-center text-[#7A8AA3]">
                     Tidak ada order yang perlu aksi sekarang. 🎉
                   </td>
                 </tr>
@@ -154,27 +154,27 @@ export function OrderSection({
               <tbody>
                 {logistics.byCarrier.map((c) => (
                   <tr key={c.carrier} className="gfx-row-border">
-                    <td className="px-3 py-2 font-medium text-[#342d32]">{c.carrier}</td>
-                    <td className="px-3 py-2 text-[#6b5a66]">{formatNumber(c.orderCount)}</td>
+                    <td className="px-3 py-2 font-medium text-[#14213D]">{c.carrier}</td>
+                    <td className="px-3 py-2 text-[#4B5D78]">{formatNumber(c.orderCount)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
           <div className="gfx-card p-5">
-            <h3 className="mb-3 font-serif text-base font-semibold text-[#342d32]">First Mile Binding</h3>
+            <h3 className="mb-3 font-serif text-base font-semibold text-[#14213D]">First Mile Binding</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <div className="text-xs font-semibold uppercase tracking-wider text-[#9d8a97]">Bound</div>
+                <div className="text-xs font-semibold uppercase tracking-wider text-[#7A8AA3]">Bound</div>
                 <div className="mt-1 text-xl font-bold text-emerald-600">{logistics.firstMileBound}</div>
               </div>
               <div>
-                <div className="text-xs font-semibold uppercase tracking-wider text-[#9d8a97]">Belum Bound</div>
+                <div className="text-xs font-semibold uppercase tracking-wider text-[#7A8AA3]">Belum Bound</div>
                 <div className="mt-1 text-xl font-bold text-rose-600">{logistics.firstMileUnbound}</div>
               </div>
             </div>
             {logistics.firstMileUnbound > 0 && (
-              <p className="mt-3 text-xs text-[#9d8a97]">
+              <p className="mt-3 text-xs text-[#7A8AA3]">
                 Order belum di-bind ke kurir bisa telat pickup — prioritaskan sebelum ship-by deadline.
               </p>
             )}
@@ -186,7 +186,7 @@ export function OrderSection({
         <h2 className="gfx-section-title">Semua order</h2>
         <form className="gfx-filter-bar mt-3 flex flex-wrap items-end gap-4 p-4">
           <input type="hidden" name="tab" value="order" />
-          <label className="flex flex-col text-sm text-[#6b5a66]">
+          <label className="flex flex-col text-sm text-[#4B5D78]">
             Status
             <select name="status" defaultValue={statusFilter} className="gfx-select mt-1">
               <option value="">Semua status</option>
@@ -215,17 +215,17 @@ export function OrderSection({
             <tbody>
               {orders.slice(0, 50).map((o) => (
                 <tr key={o.orderSn} className="gfx-row-border">
-                  <td className="whitespace-nowrap px-3 py-2 font-medium text-[#342d32]">{o.orderSn}</td>
+                  <td className="whitespace-nowrap px-3 py-2 font-medium text-[#14213D]">{o.orderSn}</td>
                   <td className="whitespace-nowrap px-3 py-2">
                     <OrderStatusChip status={o.orderStatus} />
                   </td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{maskBuyerUsername(o.buyerUsername)}</td>
-                  <td className="px-3 py-2 text-[#6b5a66]">
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{maskBuyerUsername(o.buyerUsername)}</td>
+                  <td className="px-3 py-2 text-[#4B5D78]">
                     {o.items.length} item{o.items.length > 1 ? "s" : ""}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatIdrCompact(o.totalAmount)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatDateTime(o.createTime)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(o.totalAmount)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatDateTime(o.createTime)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">
                     {o.shipByDate ? formatDateTime(o.shipByDate) : "—"}
                   </td>
                 </tr>
@@ -234,7 +234,7 @@ export function OrderSection({
           </table>
         </div>
         {orders.length > 50 && (
-          <p className="mt-2 text-xs text-[#9d8a97]">Menampilkan 50 dari {orders.length} order — pagination menyusul.</p>
+          <p className="mt-2 text-xs text-[#7A8AA3]">Menampilkan 50 dari {orders.length} order — pagination menyusul.</p>
         )}
       </section>
     </>

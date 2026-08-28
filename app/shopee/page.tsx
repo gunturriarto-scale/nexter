@@ -137,27 +137,27 @@ export default async function ShopeePage({
   return (
     <main className="mx-auto max-w-7xl px-6 py-10">
       <MockupBanner />
-      <h1 className="font-serif text-3xl font-semibold tracking-tight text-[#342d32]">
+      <h1 className="font-serif text-3xl font-semibold tracking-tight text-[#14213D]">
         Shopee <span className="gfx-text-gradient">Command Center</span>
       </h1>
-      <p className="mt-1 text-sm text-[#9d8a97]">
+      <p className="mt-1 text-sm text-[#7A8AA3]">
         Order, produk, ads (AMS), retur, dan konten live/video Glow FX Beauty Official Shop — dalam satu
         layar. POV: leadership (ringkasan) dan operasional harian (order, produk, retur).
       </p>
 
       <form className="gfx-filter-bar mt-6 flex flex-wrap items-end gap-4 p-4">
         <input type="hidden" name="tab" value={activeTab} />
-        <label className="flex flex-col text-sm text-[#6b5a66]">
+        <label className="flex flex-col text-sm text-[#4B5D78]">
           Toko
           <select className="gfx-select mt-1" defaultValue="all" disabled>
             <option value="all">Glow FX Beauty Official Shop</option>
           </select>
         </label>
-        <label className="flex flex-col text-sm text-[#6b5a66]">
+        <label className="flex flex-col text-sm text-[#4B5D78]">
           Dari
           <input type="date" name="from" defaultValue={from} className="gfx-input mt-1" />
         </label>
-        <label className="flex flex-col text-sm text-[#6b5a66]">
+        <label className="flex flex-col text-sm text-[#4B5D78]">
           Sampai
           <input type="date" name="to" defaultValue={to} className="gfx-input mt-1" />
         </label>
@@ -167,7 +167,7 @@ export default async function ShopeePage({
       </form>
 
       {/* Tab bar */}
-      <div className="mt-8 flex flex-wrap gap-2 border-b border-[#f0e4e9]">
+      <div className="mt-8 flex flex-wrap gap-2 border-b border-[#DDE6F0]">
         {TABS.map((t) => {
           const active = activeTab === t.key;
           return (
@@ -176,8 +176,8 @@ export default async function ShopeePage({
               href={`/shopee?tab=${t.key}&from=${from}&to=${to}`}
               className={`-mb-px rounded-none px-4 py-2.5 text-sm font-semibold transition-colors ${
                 active
-                  ? "border border-b-0 border-[#f0e4e9] bg-white text-[#f0466d]"
-                  : "text-[#9d8a97] hover:bg-[#fdf0f3] hover:text-[#342d32]"
+                  ? "border border-b-0 border-[#DDE6F0] bg-white text-[#2563EB]"
+                  : "text-[#7A8AA3] hover:bg-[#EFF6FF] hover:text-[#14213D]"
               }`}
             >
               <span className="mr-1.5">{t.icon}</span>

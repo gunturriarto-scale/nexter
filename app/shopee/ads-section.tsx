@@ -51,9 +51,9 @@ export function AdsSection({
             <TrendChart
               data={trend}
               series={[
-                { key: "cost", name: "Cost", color: "#f6a7bc", type: "bar", axis: "left" },
-                { key: "gmv", name: "GMV", color: "#c4c2f2", type: "bar", axis: "left" },
-                { key: "roas", name: "ROAS", color: "#f0466d", type: "line", axis: "right" },
+                { key: "cost", name: "Cost", color: "#93C5FD", type: "bar", axis: "left" },
+                { key: "gmv", name: "GMV", color: "#BFDBFE", type: "bar", axis: "left" },
+                { key: "roas", name: "ROAS", color: "#2563EB", type: "line", axis: "right" },
               ]}
             />
           </Card>
@@ -76,16 +76,16 @@ export function AdsSection({
             <tbody>
               {campaigns.map((c) => (
                 <tr key={c.campaignId} className="gfx-row-border">
-                  <td className="px-3 py-2 font-medium text-[#342d32]">{c.campaignName}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{AD_TYPE_LABEL[c.adType]}</td>
+                  <td className="px-3 py-2 font-medium text-[#14213D]">{c.campaignName}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{AD_TYPE_LABEL[c.adType]}</td>
                   <td className="whitespace-nowrap px-3 py-2">
                     <span className={`rounded-none px-2 py-0.5 text-[11px] font-semibold ${AD_STATUS_STYLE[c.status]}`}>{c.status}</span>
                   </td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatIdrCompact(c.cost)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatIdrCompact(c.gmv)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#f0466d]">{formatRoas(c.roas)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatNumber(c.impressions)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatNumber(c.clicks)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(c.cost)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(c.gmv)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#2563EB]">{formatRoas(c.roas)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(c.impressions)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(c.clicks)}</td>
                 </tr>
               ))}
             </tbody>
@@ -112,11 +112,11 @@ export function AdsSection({
             <tbody>
               {affiliates.map((a) => (
                 <tr key={a.affiliateId} className="gfx-row-border">
-                  <td className="px-3 py-2 font-medium text-[#342d32]">{a.affiliateName}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatNumber(a.clicks)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatNumber(a.orders)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#f0466d]">{formatIdrCompact(a.gmv)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatIdrCompact(a.commission)}</td>
+                  <td className="px-3 py-2 font-medium text-[#14213D]">{a.affiliateName}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(a.clicks)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(a.orders)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#2563EB]">{formatIdrCompact(a.gmv)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(a.commission)}</td>
                 </tr>
               ))}
             </tbody>

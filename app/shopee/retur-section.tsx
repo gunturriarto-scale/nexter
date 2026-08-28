@@ -54,9 +54,9 @@ export function ReturSection({
               <TrendChart
                 data={trend}
                 series={[
-                  { key: "orders", name: "Orders", color: "#c4c2f2", type: "bar", axis: "left" },
-                  { key: "returns", name: "Returns", color: "#f0466d", type: "bar", axis: "left" },
-                  { key: "ratePct", name: "Return Rate %", color: "#8154b6", type: "line", axis: "right" },
+                  { key: "orders", name: "Orders", color: "#BFDBFE", type: "bar", axis: "left" },
+                  { key: "returns", name: "Returns", color: "#2563EB", type: "bar", axis: "left" },
+                  { key: "ratePct", name: "Return Rate %", color: "#0891B2", type: "line", axis: "right" },
                 ]}
               />
             </Card>
@@ -85,19 +85,19 @@ export function ReturSection({
                 const needsSellerAction = r.status === "JUDGING" || r.status === "SELLER_DISPUTE";
                 return (
                   <tr key={r.returnSn} className="gfx-row-border">
-                    <td className="whitespace-nowrap px-3 py-2 font-medium text-[#342d32]">
+                    <td className="whitespace-nowrap px-3 py-2 font-medium text-[#14213D]">
                       <span className="inline-flex items-center gap-1.5">
                         {needsSellerAction && <SeverityDot severity="warning" />}
                         {r.returnSn}
                       </span>
                     </td>
-                    <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{r.orderSn}</td>
+                    <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{r.orderSn}</td>
                     <td className="whitespace-nowrap px-3 py-2">
                       <ReturnStatusChip status={r.status} />
                     </td>
-                    <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{r.reason.replaceAll("_", " ")}</td>
-                    <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatIdrCompact(r.refundAmount)}</td>
-                    <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatDate(r.createTime)}</td>
+                    <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{r.reason.replaceAll("_", " ")}</td>
+                    <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(r.refundAmount)}</td>
+                    <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatDate(r.createTime)}</td>
                   </tr>
                 );
               })}
@@ -123,13 +123,13 @@ export function ReturSection({
             <tbody>
               {topReturned.map((row) => (
                 <tr key={row.itemName} className="gfx-row-border">
-                  <td className="px-3 py-2 font-medium text-[#342d32]">{row.itemName}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{row.count}</td>
+                  <td className="px-3 py-2 font-medium text-[#14213D]">{row.itemName}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{row.count}</td>
                 </tr>
               ))}
               {topReturned.length === 0 && (
                 <tr>
-                  <td colSpan={2} className="px-3 py-6 text-center text-[#9d8a97]">
+                  <td colSpan={2} className="px-3 py-6 text-center text-[#7A8AA3]">
                     Belum ada data.
                   </td>
                 </tr>

@@ -1,25 +1,29 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f5f2f3;
-  --foreground: #342d32;
-  --glow-pink: #f0466d;
-  --glow-purple: #8154b6;
-  --glow-coral: #ec5932;
-  --glow-soft-pink: #f6a7bc;
-  --glow-lavender: #aaa0d3;
-  --glow-blush: #facbd4;
-  --glow-peach: #f7b8aa;
-  --glow-soft-lavender: #c4c2f2;
-  --glow-off-white: #f5f2f3;
+  --background: #f4f7fb;
+  --foreground: #14213d;
+  --glow-pink: #2563eb;
+  --glow-purple: #0891b2;
+  --glow-coral: #06b6d4;
+  --glow-soft-pink: #93c5fd;
+  --glow-lavender: #60a5fa;
+  --glow-blush: #c7e7f4;
+  --glow-peach: #a5f3fc;
+  --glow-soft-lavender: #bfdbfe;
+  --glow-off-white: #f4f7fb;
   --glow-white: #ffffff;
-  --glow-charcoal: #342d32;
+  --glow-charcoal: #14213d;
+  --border: #d9e3ee;
+  --muted: #7a8aa3;
+  --panel-muted: #f7fafe;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-glow-sans);
+  --font-serif: var(--font-glow-sans);
   --font-mono: var(--font-glow-mono);
 }
 
@@ -31,6 +35,12 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-glow-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 13px;
+}
+
+::selection {
+  background: #bfdbfe;
+  color: #14213d;
 }
 
 /* ---- Glow FX brand utilities ---- */
@@ -39,99 +49,101 @@ body {
 
 .gfx-bg { background: var(--glow-off-white); }
 .gfx-gradient {
-  background: linear-gradient(150deg, #f0466d 0%, #f6a7bc 45%, #facbd4 100%);
+  background: #2563eb;
 }
 .gfx-gradient-soft {
-  background: linear-gradient(160deg, #ffffff 0%, #fdf3f5 50%, #f5effb 100%);
+  background: #f7fafe;
 }
 .gfx-text-gradient {
-  background: linear-gradient(120deg, #f0466d 0%, #8154b6 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: #2563eb;
 }
 
 .gfx-card {
   background: var(--glow-white);
-  border: 1px solid #f0e4e9;
-  border-radius: 0;
-  box-shadow: 0 1px 2px rgba(52, 45, 50, 0.04), 0 8px 24px -12px rgba(240, 70, 109, 0.12);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(15, 35, 60, 0.04);
 }
 .gfx-card-hover {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .gfx-card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 2px 4px rgba(52, 45, 50, 0.06), 0 16px 32px -12px rgba(129, 84, 182, 0.18);
+  border-color: #93c5fd;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
 }
 
 .gfx-table-wrap {
-  border: 1px solid #f0e4e9;
-  border-radius: 0;
+  border: 1px solid var(--border);
+  border-radius: 2px;
   overflow: hidden;
   background: var(--glow-white);
-  box-shadow: 0 1px 2px rgba(52, 45, 50, 0.04), 0 8px 24px -12px rgba(240, 70, 109, 0.10);
+  box-shadow: 0 1px 2px rgba(15, 35, 60, 0.035);
 }
 .gfx-th {
-  background: linear-gradient(180deg, #fdf0f3 0%, #f9e7ec 100%);
-  color: #8154b6;
-  font-size: 0.72rem;
-  font-weight: 600;
+  background: #edf4fb;
+  color: #536984;
+  font-size: 0.64rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.075em;
   white-space: nowrap;
 }
 .gfx-row-border td {
-  border-top: 1px solid #f7eef1;
+  border-top: 1px solid #e8eef5;
+}
+.gfx-row-border:hover td {
+  background: #f8fbff;
 }
 
 .gfx-chip {
-  border-radius: 0;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 10px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
 }
 
 .gfx-btn {
-  background: linear-gradient(120deg, #f0466d 0%, #ec5932 100%);
+  background: #2563eb;
   color: #fff;
-  border-radius: 0;
-  padding: 8px 18px;
-  font-size: 14px;
-  font-weight: 600;
-  transition: opacity 0.15s ease, transform 0.15s ease;
-  box-shadow: 0 8px 20px -8px rgba(240, 70, 109, 0.55);
+  border: 1px solid #1d4ed8;
+  border-radius: 2px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  transition: background 0.15s ease;
+  box-shadow: none;
 }
-.gfx-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.gfx-btn:hover { background: #1d4ed8; }
 
 .gfx-select, .gfx-input {
-  border: 1px solid #eadfe4;
-  border-radius: 0;
+  border: 1px solid #cdd9e6;
+  border-radius: 2px;
   background: var(--glow-white);
-  padding: 6px 10px;
-  font-size: 13px;
+  min-height: 30px;
+  padding: 5px 9px;
+  font-size: 11px;
   color: var(--glow-charcoal);
   outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .gfx-select:focus, .gfx-input:focus {
   border-color: var(--glow-pink);
-  box-shadow: 0 0 0 3px rgba(240, 70, 109, 0.15);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
 }
 
 .gfx-filter-bar {
   background: var(--glow-white);
-  border: 1px solid #f0e4e9;
-  border-radius: 0;
-  box-shadow: 0 1px 2px rgba(52, 45, 50, 0.04), 0 8px 24px -12px rgba(240, 70, 109, 0.10);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(15, 35, 60, 0.035);
 }
 
 .gfx-kpi {
   background: var(--glow-white);
-  border: 1px solid #f0e4e9;
-  border-radius: 0;
-  padding: 16px;
-  box-shadow: 0 1px 2px rgba(52, 45, 50, 0.04), 0 8px 24px -12px rgba(240, 70, 109, 0.10);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 13px 14px 12px;
+  box-shadow: 0 1px 2px rgba(15, 35, 60, 0.035);
   position: relative;
   overflow: hidden;
 }
@@ -139,19 +151,19 @@ body {
   content: "";
   position: absolute;
   inset: 0 auto auto 0;
-  width: 4px;
-  height: 100%;
-  background: linear-gradient(180deg, #f0466d 0%, #8154b6 100%);
+  width: 100%;
+  height: 3px;
+  background: #22d3ee;
 }
 .gfx-kpi .kpi-label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.075em;
   text-transform: uppercase;
-  color: #9d8a97;
+  color: #71839b;
 }
 .gfx-kpi .kpi-value {
-  font-size: 22px;
+  font-size: 19px;
   font-weight: 700;
   color: var(--glow-charcoal);
   margin-top: 2px;
@@ -159,19 +171,20 @@ body {
 }
 
 .gfx-section-title {
-  font-family: var(--font-glow-serif), Georgia, serif;
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-family: var(--font-glow-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
   color: var(--glow-charcoal);
+  letter-spacing: -0.015em;
 }
 .gfx-section-desc {
-  font-size: 12px;
-  color: #9d8a97;
+  font-size: 10px;
+  color: #7a8aa3;
 }
 
 .gfx-badge-pill {
-  border-radius: 0;
-  padding: 3px 10px;
-  font-size: 11px;
-  font-weight: 600;
+  border-radius: 2px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 700;
 }

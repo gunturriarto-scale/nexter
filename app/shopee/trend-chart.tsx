@@ -33,7 +33,7 @@ export function TrendChart({
 }) {
   if (data.length === 0) {
     return (
-      <div className="flex h-64 items-center justify-center text-sm text-[#9d8a97]">
+      <div className="flex h-64 items-center justify-center text-sm text-[#7A8AA3]">
         Belum ada data untuk rentang ini.
       </div>
     );
@@ -44,14 +44,14 @@ export function TrendChart({
   return (
     <ResponsiveContainer width="100%" height={280}>
       <ComposedChart data={data} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" opacity={0.2} stroke="#eadfe4" />
-        <XAxis dataKey={xKey} tick={{ fontSize: 12, fill: "#9d8a97" }} />
-        <YAxis yAxisId="left" tick={{ fontSize: 12, fill: "#9d8a97" }} />
-        {hasRight && <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12, fill: "#9d8a97" }} />}
+        <CartesianGrid strokeDasharray="3 3" opacity={0.2} stroke="#D6E1EC" />
+        <XAxis dataKey={xKey} tick={{ fontSize: 12, fill: "#7A8AA3" }} />
+        <YAxis yAxisId="left" tick={{ fontSize: 12, fill: "#7A8AA3" }} />
+        {hasRight && <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12, fill: "#7A8AA3" }} />}
         <Tooltip
           contentStyle={{
             borderRadius: 0,
-            border: "1px solid #f0e4e9",
+            border: "1px solid #DDE6F0",
             boxShadow: "0 8px 24px -12px rgba(240,70,109,0.15)",
             fontSize: 12,
           }}

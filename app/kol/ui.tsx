@@ -40,7 +40,7 @@ const SOURCE_LABEL: Record<CreatorSource, string> = {
 };
 export function SourceBadge({ source }: { source: CreatorSource }) {
   return (
-    <span className="rounded-none bg-[#fdf0f3] px-1.5 py-0.5 text-[10px] font-medium text-[#8154b6]">
+    <span className="rounded-none bg-[#EFF6FF] px-1.5 py-0.5 text-[10px] font-medium text-[#0891B2]">
       {SOURCE_LABEL[source]}
     </span>
   );
@@ -55,7 +55,7 @@ const AUTH_LABEL: Record<AuthorizationType, string> = {
 };
 export function AuthorizationBadge({ type }: { type: AuthorizationType }) {
   return (
-    <span className="rounded-none bg-[#fdf0f3] px-1.5 py-0.5 text-[10px] font-medium text-[#8154b6]">
+    <span className="rounded-none bg-[#EFF6FF] px-1.5 py-0.5 text-[10px] font-medium text-[#0891B2]">
       {AUTH_LABEL[type]}
     </span>
   );
@@ -89,7 +89,7 @@ export function TierBadge({ followerCount }: { followerCount: number }) {
 export function Card({ title, children }: { title?: string; children: React.ReactNode }) {
   return (
     <div className="gfx-card p-5">
-      {title && <h3 className="mb-3 font-serif text-base font-semibold text-[#342d32]">{title}</h3>}
+      {title && <h3 className="mb-3 font-serif text-base font-semibold text-[#14213D]">{title}</h3>}
       {children}
     </div>
   );

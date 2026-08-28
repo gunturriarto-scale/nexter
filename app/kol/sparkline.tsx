@@ -4,7 +4,7 @@ import { Line, LineChart, ResponsiveContainer, Tooltip } from "recharts";
 
 export function ViewsSparkline({ data }: { data: { day: string; views: number }[] }) {
   if (data.length === 0) {
-    return <div className="h-10 text-[11px] text-[#a895a1]">Belum ada data tren.</div>;
+    return <div className="h-10 text-[11px] text-[#91A0B5]">Belum ada data tren.</div>;
   }
   return (
     <div className="h-10 w-full">
@@ -17,10 +17,10 @@ export function ViewsSparkline({ data }: { data: { day: string; views: number }[
               fontSize: 11,
               padding: "4px 8px",
               borderRadius: 0,
-              border: "1px solid #f0e4e9",
+              border: "1px solid #DDE6F0",
             }}
           />
-          <Line type="monotone" dataKey="views" stroke="#f0466d" strokeWidth={2} dot={false} />
+          <Line type="monotone" dataKey="views" stroke="#2563EB" strokeWidth={2} dot={false} />
         </LineChart>
       </ResponsiveContainer>
     </div>

@@ -4,7 +4,7 @@ import { OrderStatus, ReturnStatus, ProductStatus } from "@/lib/shopee/types";
 export function Card({ title, children }: { title?: string; children: React.ReactNode }) {
   return (
     <div className="gfx-card p-5">
-      {title && <h3 className="mb-3 font-serif text-base font-semibold text-[#342d32]">{title}</h3>}
+      {title && <h3 className="mb-3 font-serif text-base font-semibold text-[#14213D]">{title}</h3>}
       {children}
     </div>
   );
@@ -41,8 +41,8 @@ const CHIP_BASE = "inline-flex items-center rounded-none px-2 py-0.5 text-[11px]
 const ORDER_STATUS_STYLE: Record<OrderStatus, string> = {
   UNPAID: "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300",
   PENDING: "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300",
-  READY_TO_SHIP: "bg-gradient-to-r from-[#f0466d]/15 to-[#8154b6]/15 text-[#8154b6] ring-1 ring-[#c4c2f2]",
-  PROCESSED: "bg-gradient-to-r from-[#f0466d]/15 to-[#8154b6]/15 text-[#8154b6] ring-1 ring-[#c4c2f2]",
+  READY_TO_SHIP: "bg-gradient-to-r from-[#2563EB]/15 to-[#0891B2]/15 text-[#0891B2] ring-1 ring-[#BFDBFE]",
+  PROCESSED: "bg-gradient-to-r from-[#2563EB]/15 to-[#0891B2]/15 text-[#0891B2] ring-1 ring-[#BFDBFE]",
   SHIPPED: "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300",
   TO_CONFIRM_RECEIVE: "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300",
   COMPLETED: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
@@ -110,8 +110,8 @@ export function ProductStatusChip({ status }: { status: ProductStatus }) {
 
 export function MockupBanner({ text }: { text?: string }) {
   return (
-    <div className="mb-4 inline-flex items-center gap-2 rounded-none bg-white px-3 py-1 text-xs font-semibold text-[#8154b6] ring-1 ring-[#c4c2f2]">
-      <span className="h-2 w-2 rounded-none bg-[#f0466d]" />
+    <div className="mb-4 inline-flex items-center gap-2 rounded-none bg-white px-3 py-1 text-xs font-semibold text-[#0891B2] ring-1 ring-[#BFDBFE]">
+      <span className="h-2 w-2 rounded-none bg-[#2563EB]" />
       {text ?? "Mockup mode — data dummy, belum tersambung Supabase/Shopee API"}
     </div>
   );

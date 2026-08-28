@@ -8,7 +8,7 @@ export function Leaderboard({ rows }: { rows: LeaderboardRow[] }) {
       <table className="w-full min-w-[900px] text-left text-sm">
         <thead>
           <tr>
-            {["KOL", "Tier", "Fokus produk", "Follower", "Post", "Total views", "Avg. engagement", "Paid (GMV Max)"].map(
+            {["Creator", "Tier", "Fokus produk", "Follower", "Post", "Total views", "Avg. engagement", "Paid (GMV Max)"].map(
               (h) => (
                 <th key={h} className="gfx-th px-3 py-2">
                   {h}
@@ -20,8 +20,8 @@ export function Leaderboard({ rows }: { rows: LeaderboardRow[] }) {
         <tbody>
           {rows.length === 0 && (
             <tr>
-              <td className="px-3 py-4 text-[#9d8a97]" colSpan={8}>
-                Belum ada KOL untuk filter ini.
+              <td className="px-3 py-4 text-[#7A8AA3]" colSpan={8}>
+                Belum ada Creator untuk filter ini.
               </td>
             </tr>
           )}
@@ -31,8 +31,8 @@ export function Leaderboard({ rows }: { rows: LeaderboardRow[] }) {
                 <div className="flex items-center gap-2">
                   <Avatar seed={r.creator.avatarSeed} label={r.creator.displayName} size={32} />
                   <div>
-                    <div className="font-semibold text-[#342d32]">{r.creator.displayName}</div>
-                    <div className="flex items-center gap-1 text-xs text-[#9d8a97]">
+                    <div className="font-semibold text-[#14213D]">{r.creator.displayName}</div>
+                    <div className="flex items-center gap-1 text-xs text-[#7A8AA3]">
                       {r.creator.username}
                       <SourceBadge source={r.creator.source} />
                     </div>
@@ -42,12 +42,12 @@ export function Leaderboard({ rows }: { rows: LeaderboardRow[] }) {
               <td className="whitespace-nowrap px-3 py-2">
                 <TierBadge followerCount={r.creator.followerCount} />
               </td>
-              <td className="px-3 py-2 text-[#9d8a97]">{r.creator.productFocus}</td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatCompact(r.creator.followerCount)}</td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{r.postCount}</td>
-              <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#342d32]">{formatCompact(r.totalViews)}</td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatPercent(r.avgEngagementRate)}</td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">
+              <td className="px-3 py-2 text-[#7A8AA3]">{r.creator.productFocus}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatCompact(r.creator.followerCount)}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{r.postCount}</td>
+              <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#14213D]">{formatCompact(r.totalViews)}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatPercent(r.avgEngagementRate)}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">
                 {r.paidCost !== null ? (
                   <span>
                     {formatCurrency(r.paidCost)} cost · {formatRoi(r.paidRoi ?? 0)} ROI
@@ -60,8 +60,8 @@ export function Leaderboard({ rows }: { rows: LeaderboardRow[] }) {
           ))}
         </tbody>
       </table>
-      <p className="border-t border-[#f7eef1] px-3 py-2 text-[11px] text-[#9d8a97]">
-        Paid (GMV Max) cuma keisi kalau video KOL ini juga jalan sebagai creative berbayar — join dari
+      <p className="border-t border-[#EDF3F8] px-3 py-2 text-[11px] text-[#7A8AA3]">
+        Paid (GMV Max) cuma keisi kalau video Creator ini juga jalan sebagai creative berbayar — join dari
         GMV Max report dimensions=[item_id].
       </p>
     </div>

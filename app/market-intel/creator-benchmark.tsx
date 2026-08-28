@@ -1,22 +1,22 @@
 import { Creator } from "@/lib/market-intel/benchmark-types";
-import { formatIdrCompact, formatCompact, formatNumber, formatGrowthPct, formatPct } from "@/lib/market-intel/format";
+import { formatIdrCompact, formatCompact, formatGrowthPct, formatPct } from "@/lib/market-intel/format";
 
 function brandColor(brand: string): string {
   const map: Record<string, string> = {
-    "Glow FX": "#f0466d",
-    Somethinc: "#8154b6",
-    Hanasui: "#ec5932",
-    Scarlett: "#aaa0d3",
-    Whitelab: "#9d8a97",
-    Azarine: "#f6a7bc",
+    "Glow FX": "#2563EB",
+    Somethinc: "#0891B2",
+    Hanasui: "#06B6D4",
+    Scarlett: "#60A5FA",
+    Whitelab: "#7A8AA3",
+    Azarine: "#93C5FD",
   };
-  return map[brand] ?? "#9d8a97";
+  return map[brand] ?? "#7A8AA3";
 }
 
 function engLevel(er: number): { label: string; color: string } {
   if (er >= 12) return { label: "Tinggi", color: "text-emerald-600" };
   if (er >= 8) return { label: "Sedang", color: "text-amber-600" };
-  return { label: "Rendah", color: "text-[#9d8a97]" };
+  return { label: "Rendah", color: "text-[#7A8AA3]" };
 }
 
 export function CreatorBenchmark({ creators }: { creators: Creator[] }) {
@@ -35,15 +35,15 @@ export function CreatorBenchmark({ creators }: { creators: Creator[] }) {
           {sorted.map((c) => {
             const eng = engLevel(c.engagementRate);
             return (
-              <tr key={c.creatorId} className={`gfx-row-border ${c.affiliatedBrand === "Glow FX" ? "bg-[#fdf0f3]/40" : ""}`}>
+              <tr key={c.creatorId} className={`gfx-row-border ${c.affiliatedBrand === "Glow FX" ? "bg-[#EFF6FF]/40" : ""}`}>
                 <td className="px-3 py-2">
-                  <div className="font-semibold text-[#342d32]">{c.creatorNickname}</div>
-                  <div className="text-xs text-[#9d8a97]">{c.creatorHandle}</div>
+                  <div className="font-semibold text-[#14213D]">{c.creatorNickname}</div>
+                  <div className="text-xs text-[#7A8AA3]">{c.creatorHandle}</div>
                 </td>
                 <td className="px-3 py-2">
                   <span className="inline-flex items-center gap-1.5">
                     <span className="inline-block h-2 w-2 rounded-none" style={{ background: brandColor(c.affiliatedBrand) }} />
-                    <span className="text-[#6b5a66]">{c.affiliatedBrand}</span>
+                    <span className="text-[#4B5D78]">{c.affiliatedBrand}</span>
                   </span>
                 </td>
                 <td className="whitespace-nowrap px-3 py-2">
@@ -51,21 +51,21 @@ export function CreatorBenchmark({ creators }: { creators: Creator[] }) {
                     {c.creatorStatus === "INDEPENDENT" ? "Independent" : "Brand-owned"}
                   </span>
                 </td>
-                <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#342d32]">{formatIdrCompact(c.revenue)}</td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatGrowthPct(c.revenueGrowthRate)}</td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatCompact(c.creatorFollowers)}</td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatCompact(c.contentViews)}</td>
+                <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#14213D]">{formatIdrCompact(c.revenue)}</td>
+                <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatGrowthPct(c.revenueGrowthRate)}</td>
+                <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatCompact(c.creatorFollowers)}</td>
+                <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatCompact(c.contentViews)}</td>
                 <td className="whitespace-nowrap px-3 py-2">
                   <span className={`font-semibold ${eng.color}`}>{formatPct(c.engagementRate)}</span>
                 </td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatIdrCompact(c.videoRevenue)}</td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatIdrCompact(c.liveRevenue)}</td>
+                <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(c.videoRevenue)}</td>
+                <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(c.liveRevenue)}</td>
               </tr>
             );
           })}
         </tbody>
       </table>
-      <p className="border-t border-[#f7eef1] px-3 py-2 text-[11px] text-[#9d8a97]">
+      <p className="border-t border-[#EDF3F8] px-3 py-2 text-[11px] text-[#7A8AA3]">
         Sumber: creator/rank + creator/detail. Independent = kreator luar, brand-owned = akun resmi brand.
         Engagement: tinggi ≥12%, sedang 8–12%.
       </p>

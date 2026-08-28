@@ -2,7 +2,7 @@ import { MOCK_BRANDS, MOCK_CANCELLATIONS } from "@/lib/loss/mock-data";
 import { buildLossAlerts, groupByReason, sumLoss } from "@/lib/loss/aggregate";
 import { formatCurrency, formatCurrency2, formatNumber } from "@/lib/loss/format";
 import { CancelTable } from "@/app/loss/cancel-table";
-import { Card, SeverityDot, alertCardClass } from "@/app/loss/ui";
+import { SeverityDot, alertCardClass } from "@/app/loss/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -23,21 +23,21 @@ export default function LossAnalysisPage() {
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-10">
-      <div className="mb-4 inline-flex items-center gap-2 rounded-none bg-white px-3 py-1 text-xs font-semibold text-[#8154b6] ring-1 ring-[#c4c2f2]">
-        <span className="h-2 w-2 rounded-none bg-[#f0466d]" />
+      <div className="mb-4 inline-flex items-center gap-2 rounded-none bg-white px-3 py-1 text-xs font-semibold text-[#0891B2] ring-1 ring-[#BFDBFE]">
+        <span className="h-2 w-2 rounded-none bg-[#2563EB]" />
         Mockup mode — data dummy, struktur field = TikTok Shop Seller API search-cancellations
       </div>
-      <h1 className="font-serif text-3xl font-semibold tracking-tight text-[#342d32]">
+      <h1 className="font-serif text-3xl font-semibold tracking-tight text-[#14213D]">
         Loss Analysis <span className="gfx-text-gradient">— Cancellations</span>
       </h1>
-      <p className="mt-1 text-sm text-[#9d8a97]">
+      <p className="mt-1 text-sm text-[#7A8AA3]">
         Pantau order cancellation & refund — revenue bocor, alasan cancel terbanyak, dan action yang
         perlu diambil seller sebelum deadline.
       </p>
 
       {/* Filter bar (mock — mirrors the real query filters) */}
       <form className="gfx-filter-bar mt-6 flex flex-wrap items-end gap-4 p-4">
-        <label className="flex flex-col text-sm text-[#6b5a66]">
+        <label className="flex flex-col text-sm text-[#4B5D78]">
           Brand
           <select className="gfx-select mt-1">
             {MOCK_BRANDS.map((b) => (
@@ -47,7 +47,7 @@ export default function LossAnalysisPage() {
             ))}
           </select>
         </label>
-        <label className="flex flex-col text-sm text-[#6b5a66]">
+        <label className="flex flex-col text-sm text-[#4B5D78]">
           Cancel status
           <select className="gfx-select mt-1">
             <option>Semua status</option>
@@ -57,11 +57,11 @@ export default function LossAnalysisPage() {
             <option>Dibatalkan</option>
           </select>
         </label>
-        <label className="flex flex-col text-sm text-[#6b5a66]">
+        <label className="flex flex-col text-sm text-[#4B5D78]">
           Dari
           <input type="date" className="gfx-input mt-1" defaultValue="2026-08-01" />
         </label>
-        <label className="flex flex-col text-sm text-[#6b5a66]">
+        <label className="flex flex-col text-sm text-[#4B5D78]">
           Sampai
           <input type="date" className="gfx-input mt-1" defaultValue="2026-08-12" />
         </label>
@@ -103,7 +103,7 @@ export default function LossAnalysisPage() {
       <section className="mt-8">
         <h2 className="gfx-section-title">Alasan cancel terbanyak</h2>
         <p className="gfx-section-desc mt-1">
-          Group by <code className="rounded-none bg-[#fdf0f3] px-1 text-[#8154b6]">cancel_reason</code> —
+          Group by <code className="rounded-none bg-[#EFF6FF] px-1 text-[#0891B2]">cancel_reason</code> —
           lihat akar masalah cancellation (product? shipping? buyer?).
         </p>
         <div className="gfx-table-wrap mt-3 overflow-x-auto">
@@ -119,22 +119,22 @@ export default function LossAnalysisPage() {
             <tbody>
               {reasons.map((r) => (
                 <tr key={r.reasonKey} className="gfx-row-border">
-                  <td className="px-3 py-2 font-medium text-[#342d32]">{r.reasonText}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#6b5a66]">{formatNumber(r.count)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#f0466d]">
+                  <td className="px-3 py-2 font-medium text-[#14213D]">{r.reasonText}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(r.count)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#2563EB]">
                     {formatCurrency2(r.refundTotal)}
                   </td>
                   <td className="px-3 py-2">
                     <div className="flex items-center gap-2">
-                      <div className="h-2 w-24 overflow-hidden rounded-none bg-[#f7eef1]">
+                      <div className="h-2 w-24 overflow-hidden rounded-none bg-[#EDF3F8]">
                         <div
-                          className="h-full rounded-none bg-gradient-to-r from-[#f0466d] to-[#8154b6]"
+                          className="h-full rounded-none bg-gradient-to-r from-[#2563EB] to-[#0891B2]"
                           style={{
                             width: `${totals.totalRefund > 0 ? (r.refundTotal / totals.totalRefund) * 100 : 0}%`,
                           }}
                         />
                       </div>
-                      <span className="text-xs text-[#9d8a97]">
+                      <span className="text-xs text-[#7A8AA3]">
                         {totals.totalRefund > 0
                           ? `${((r.refundTotal / totals.totalRefund) * 100).toFixed(0)}%`
                           : "0%"}
