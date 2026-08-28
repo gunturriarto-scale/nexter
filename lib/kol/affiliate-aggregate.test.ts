@@ -90,6 +90,7 @@ describe("period aggregation", () => {
     );
     expect(overview.gmv.current).toBe(1_000);
     expect(overview.activeAffiliates.current).toBe(1);
+    expect(overview.postingAffiliates.current).toBe(1);
     expect(overview.videoQuantity.current).toBe(1);
     expect(overview.validVideoQuantity.current).toBe(1);
   });

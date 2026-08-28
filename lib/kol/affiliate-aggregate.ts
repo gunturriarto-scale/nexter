@@ -189,7 +189,10 @@ function totals(
     gmvVideo: gmvByChannel("VIDEO"),
     gmvLive: gmvByChannel("LIVE"),
     gmvProductCard: gmvByChannel("PRODUCT_CARD"),
+    // affiliates that generated revenue in the period (any attribution fact)
     activeAffiliates: new Set(facts.flatMap((fact) => (creatorIdOf(fact.creatorUsername) ? [creatorIdOf(fact.creatorUsername)!] : []))).size,
+    // affiliates that posted at least one video in the period
+    postingAffiliates: new Set(videos.flatMap((video) => (creatorIdOf(video.creatorUsername) ? [creatorIdOf(video.creatorUsername)!] : []))).size,
     liveStreamers: new Set(
       facts.flatMap((fact) => (fact.channel === "LIVE" && creatorIdOf(fact.creatorUsername) ? [creatorIdOf(fact.creatorUsername)!] : []))
     ).size,
@@ -228,6 +231,7 @@ export function buildAffiliateOverview(
     gmvLive: metric(currentTotals.gmvLive, previousTotals.gmvLive),
     gmvProductCard: metric(currentTotals.gmvProductCard, previousTotals.gmvProductCard),
     activeAffiliates: metric(currentTotals.activeAffiliates, previousTotals.activeAffiliates),
+    postingAffiliates: metric(currentTotals.postingAffiliates, previousTotals.postingAffiliates),
     liveStreamers: metric(currentTotals.liveStreamers, previousTotals.liveStreamers),
     videoQuantity: metric(currentTotals.videoQuantity, previousTotals.videoQuantity),
     validVideoQuantity: metric(currentTotals.validVideoQuantity, previousTotals.validVideoQuantity),
