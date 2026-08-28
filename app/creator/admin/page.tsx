@@ -6,22 +6,17 @@ import {
   MOCK_AFFILIATE_PICS,
   MOCK_AFFILIATE_PROFILES,
   MOCK_COMPETITIONS,
-  MOCK_CREATOR_LEVEL_SNAPSHOTS,
 } from "@/lib/kol/affiliate-mock-data";
 import { EditableGrid, TagsInput, type GridRow } from "@/app/creator/admin/editable-grid";
 
 const TABS = [
   { key: "pic", label: "PIC / AM" },
   { key: "creators", label: "Creators & Mapping" },
-  { key: "aliases", label: "Alias" },
-  { key: "tags", label: "Tag vocab" },
   { key: "campaigns", label: "Campaign" },
   { key: "competitions", label: "Kompetisi" },
-  { key: "levels", label: "Creator Level" },
 ] as const;
 type TabKey = (typeof TABS)[number]["key"];
 
-const LEVEL_OPTIONS = ["Lv. 1", "Lv. 2", "Lv. 3", "Lv. 4", "Lv. 5"].map((l) => ({ value: l, label: l }));
 const STATUS_OPTIONS = [
   { value: "ACTIVE", label: "ACTIVE" },
   { value: "ENDED", label: "ENDED" },
@@ -40,6 +35,34 @@ interface Competition {
   minimumHashtagMatches: number;
 }
 
+function titleFromHandle(username: string): string {
+  return username
+    .replace(/^@/, "")
+    .split(/[._-]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function slugId(username: string): string {
+  return "creator-" + username.replace(/^@/, "").replace(/[^a-z0-9]+/gi, "-").toLowerCase();
+}
+
+function parseBulk(text: string): { username: string; displayName: string; creatorId: string }[] {
+  return text
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [handlePart, ...rest] = line.split(/[,\t|]/);
+      let username = handlePart.trim();
+      if (username && !username.startsWith("@")) username = "@" + username;
+      const displayName = rest.join(" ").trim() || titleFromHandle(username);
+      return { username, displayName, creatorId: slugId(username) };
+    })
+    .filter((row) => row.username.length > 1);
+}
+
 export default function AffiliateAdminPage() {
   const [tab, setTab] = useState<TabKey>("pic");
   const [showJson, setShowJson] = useState(false);
@@ -51,17 +74,9 @@ export default function AffiliateAdminPage() {
     MOCK_AFFILIATE_PROFILES.map((c) => ({
       displayName: c.displayName,
       username: c.username,
-      followerCount: c.followerCount,
       pic: c.pic,
-      tags: c.tags,
       creatorId: c.creatorId,
     }))
-  );
-  const [aliases, setAliases] = useState<GridRow[]>(() =>
-    MOCK_AFFILIATE_PROFILES.flatMap((c) => c.usernameAliases.map((alias) => ({ creatorId: c.creatorId, alias })))
-  );
-  const [tagVocab, setTagVocab] = useState<string[]>(() =>
-    Array.from(new Set(MOCK_AFFILIATE_PROFILES.flatMap((c) => c.tags))).sort()
   );
   const [campaigns, setCampaigns] = useState<GridRow[]>(() =>
     MOCK_AFFILIATE_CAMPAIGNS.map((c) => ({
@@ -85,36 +100,34 @@ export default function AffiliateAdminPage() {
       minimumHashtagMatches: c.minimumHashtagMatches,
     }))
   );
-  const [levels, setLevels] = useState<GridRow[]>(() =>
-    MOCK_CREATOR_LEVEL_SNAPSHOTS.map((s) => ({ creatorId: s.creatorId, effectiveMonth: s.effectiveMonth, level: s.level }))
-  );
+
+  // bulk-assign state for the Creators tab
+  const [bulkPic, setBulkPic] = useState<string>(MOCK_AFFILIATE_PICS[0]?.picId ?? "");
+  const [bulkText, setBulkText] = useState("");
 
   const picOptions = useMemo(
     () => pics.filter((p) => p.picId).map((p) => ({ value: String(p.picId), label: `${p.name} (${p.picId})` })),
     [pics]
   );
-  const creatorOptions = useMemo(
-    () => creators.filter((c) => c.creatorId).map((c) => ({ value: String(c.creatorId), label: `${c.displayName} · ${c.username}` })),
-    [creators]
-  );
   const campaignOptions = useMemo(
     () => campaigns.filter((c) => c.campaignId).map((c) => ({ value: String(c.campaignId), label: c.name ? String(c.name) : String(c.campaignId) })),
     [campaigns]
   );
-  const tagOptions = useMemo(() => tagVocab.map((t) => ({ value: t, label: t })), [tagVocab]);
+
+  function addBulk() {
+    const parsed = parseBulk(bulkText);
+    if (parsed.length === 0 || !bulkPic) return;
+    const existing = new Set(creators.map((c) => String(c.username).toLowerCase()));
+    const fresh = parsed
+      .filter((row) => !existing.has(row.username.toLowerCase()))
+      .map((row) => ({ displayName: row.displayName, username: row.username, pic: bulkPic, creatorId: row.creatorId }));
+    setCreators([...creators, ...fresh]);
+    setBulkText("");
+  }
 
   const jsonForTab: Record<TabKey, unknown> = {
     pic: pics.map((p) => ({ picId: p.picId, name: p.name, avatarSeed: p.avatarSeed })),
-    creators: creators.map((c) => ({
-      creatorId: c.creatorId,
-      username: c.username,
-      displayName: c.displayName,
-      followerCount: Number(c.followerCount) || 0,
-      pic: c.pic,
-      tags: c.tags,
-    })),
-    aliases: aliases.map((a) => ({ creatorId: a.creatorId, alias: a.alias })),
-    tags: tagVocab,
+    creators: creators.map((c) => ({ creatorId: c.creatorId, username: c.username, displayName: c.displayName, pic: c.pic })),
     campaigns: campaigns.map((c) => ({
       campaignId: c.campaignId,
       name: c.name,
@@ -123,8 +136,9 @@ export default function AffiliateAdminPage() {
       minimumHashtagMatches: Number(c.minimumHashtagMatches) || 0,
     })),
     competitions,
-    levels: levels.map((l) => ({ creatorId: l.creatorId, effectiveMonth: l.effectiveMonth, level: l.level, source: "TIKTOK_MARKETPLACE_FILTER" })),
   };
+
+  const bulkPicName = pics.find((p) => p.picId === bulkPic)?.name ?? "PIC";
 
   return (
     <main className="mx-auto max-w-[1400px] px-4 py-7 sm:px-6">
@@ -136,7 +150,7 @@ export default function AffiliateAdminPage() {
         <h1 className="text-2xl font-bold tracking-tight text-[#14213D]">Affiliate — Input Data Internal</h1>
         <p className="mt-1 max-w-3xl text-[11px] text-[#7A8AA3]">
           Form buat tim affiliate ngisi data yang nggak dateng dari API TikTok: roster PIC, mapping creator ke PIC,
-          alias handle, tag, campaign, kompetisi, dan Creator Level bulanan. Referensi lengkap:{" "}
+          campaign, dan kompetisi. Referensi lengkap:{" "}
           <code className="rounded-none bg-[#EFF6FF] px-1 text-[#0891B2]">docs/affiliate-manual-data.md</code>. Ini
           preview — perubahan belum disimpan ke mana-mana.
         </p>
@@ -197,44 +211,61 @@ export default function AffiliateAdminPage() {
         )}
 
         {tab === "creators" && (
-          <EditableGrid
-            fields={[
-              { key: "displayName", label: "Display name", placeholder: "Kulit Sehat ID" },
-              { key: "username", label: "Username (@handle)", placeholder: "@kulitsehat.id", width: "w-[200px]" },
-              { key: "followerCount", label: "Followers", type: "number", width: "w-[120px]" },
-              { key: "pic", label: "PIC", type: "select", options: picOptions, width: "w-[190px]" },
-              { key: "tags", label: "Tags", type: "tags", width: "w-[260px]" },
-              { key: "creatorId", label: "creatorId", placeholder: "creator-sissy-0", width: "w-[190px]" },
-            ]}
-            rows={creators}
-            onChange={setCreators}
-            makeBlankRow={() => ({ displayName: "", username: "", followerCount: "", pic: "", tags: [], creatorId: "" })}
-            addLabel="+ Tambah creator"
-          />
-        )}
-
-        {tab === "aliases" && (
-          <EditableGrid
-            fields={[
-              { key: "creatorId", label: "Creator", type: "select", options: creatorOptions, width: "w-[320px]" },
-              { key: "alias", label: "Alias username (@handle)", placeholder: "@kulitsehat.glow" },
-            ]}
-            rows={aliases}
-            onChange={setAliases}
-            makeBlankRow={() => ({ creatorId: "", alias: "" })}
-            addLabel="+ Tambah alias"
-            emptyLabel="Belum ada alias. Tambah tiap ada banner “Data quality” di dashboard."
-          />
-        )}
-
-        {tab === "tags" && (
-          <div className="gfx-card max-w-xl p-4">
-            <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#2563EB]">Tag vocabulary</div>
-            <p className="gfx-section-desc mt-1">Daftar tag yang boleh dipakai di tab Creators. Ketik lalu Enter.</p>
-            <div className="mt-3">
-              <TagsInput value={tagVocab} onChange={setTagVocab} placeholder="tambah tag" />
+          <div className="space-y-5">
+            <div className="gfx-card p-4">
+              <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#2563EB]">Bulk assign</div>
+              <p className="gfx-section-desc mt-1">
+                Pilih PIC, terus tempel daftar creator-nya (satu per baris). Format: <code>@handle</code> atau{" "}
+                <code>@handle, Nama Tampilan</code>. Handle yang udah kemapping bakal dilewati.
+              </p>
+              <div className="mt-3 flex flex-wrap items-end gap-3">
+                <label className="flex flex-col text-[10px] font-semibold uppercase tracking-[0.06em] text-[#71839B]">
+                  PIC / AM
+                  <select className="gfx-select mt-1 !text-[11px]" value={bulkPic} onChange={(e) => setBulkPic(e.target.value)}>
+                    {picOptions.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              <textarea
+                className="gfx-input mt-3 h-40 w-full font-mono !text-[11px] leading-5"
+                placeholder={"@kulitsehat.id, Kulit Sehat ID\n@dermaid.review\n@glow.by.tia, Glow by Tia"}
+                value={bulkText}
+                onChange={(e) => setBulkText(e.target.value)}
+              />
+              <button
+                type="button"
+                className="gfx-btn mt-3"
+                onClick={addBulk}
+                disabled={!bulkText.trim() || !bulkPic}
+              >
+                + Tambah ke {bulkPicName}
+              </button>
             </div>
-            {tagOptions.length === 0 && <p className="mt-2 text-[11px] text-[#7A8AA3]">Belum ada tag.</p>}
+
+            <div>
+              <div className="mb-2 flex items-end justify-between">
+                <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#2563EB]">
+                  Semua mapping ({creators.length})
+                </div>
+                <p className="text-[10px] text-[#7A8AA3]">Ganti PIC lewat dropdown, hapus lewat ×.</p>
+              </div>
+              <EditableGrid
+                fields={[
+                  { key: "displayName", label: "Display name", placeholder: "Kulit Sehat ID" },
+                  { key: "username", label: "Username (@handle)", placeholder: "@kulitsehat.id", width: "w-[220px]" },
+                  { key: "pic", label: "PIC", type: "select", options: picOptions, width: "w-[210px]" },
+                  { key: "creatorId", label: "creatorId", placeholder: "auto", width: "w-[210px]" },
+                ]}
+                rows={creators}
+                onChange={setCreators}
+                makeBlankRow={() => ({ displayName: "", username: "", pic: bulkPic, creatorId: "" })}
+                addLabel="+ Tambah satu creator"
+              />
+            </div>
           </div>
         )}
 
@@ -262,20 +293,6 @@ export default function AffiliateAdminPage() {
             creators={creators}
           />
         )}
-
-        {tab === "levels" && (
-          <EditableGrid
-            fields={[
-              { key: "creatorId", label: "Creator", type: "select", options: creatorOptions, width: "w-[320px]" },
-              { key: "effectiveMonth", label: "Bulan (YYYY-MM)", placeholder: "2026-08", width: "w-[160px]" },
-              { key: "level", label: "Level", type: "select", options: LEVEL_OPTIONS, width: "w-[130px]" },
-            ]}
-            rows={levels}
-            onChange={setLevels}
-            makeBlankRow={() => ({ creatorId: "", effectiveMonth: "", level: "Lv. 1" })}
-            addLabel="+ Tambah snapshot"
-          />
-        )}
       </div>
 
       <footer className="mt-10 border-t border-[#D9E3EE] py-5 text-[10px] leading-4 text-[#7A8AA3]">
@@ -288,12 +305,9 @@ export default function AffiliateAdminPage() {
 
 const TAB_HINT: Record<TabKey, string> = {
   pic: "Roster affiliate manager. picId dipakai sebagai kunci di tab Creators.",
-  creators: "Roster creator + mapping ke PIC + tag. Satu creator = satu PIC.",
-  aliases: "Handle lama / varian per creator, buat resolusi identity map.",
-  tags: "Kosakata tag internal yang dipakai di tab Creators.",
+  creators: "Roster creator + mapping ke PIC. Satu creator = satu PIC.",
   campaigns: "Definisi campaign + aturan hashtag buat validasi video.",
   competitions: "Setup kompetisi: tipe, periode, peserta, aturan hashtag.",
-  levels: "Snapshot Creator Level bulanan (export dari TikTok Creator Marketplace).",
 };
 
 function CompetitionSection({
