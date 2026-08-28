@@ -2,7 +2,7 @@
 
 import { Avatar } from "@/app/kol/ui";
 import { DataTable, type DataTableColumn } from "@/components/data-table";
-import { AffiliatePic, AffiliatePicCreatorRow, AffiliatePicRow } from "@/lib/kol/affiliate-types";
+import { AffiliatePic, AffiliatePicCreatorRow, AffiliatePicRow, MetricValue } from "@/lib/kol/affiliate-types";
 
 function compactIdr(value: number): string {
   return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", notation: "compact", maximumFractionDigits: 1 }).format(value);
@@ -22,14 +22,47 @@ function GrowthBadge({ value }: { value: number | null }) {
   return <span className={`gfx-chip ${positive ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"}`}>{positive ? "▲" : "▼"} {Math.abs(value).toFixed(1)}%</span>;
 }
 
+/** Compact "% vs previous" shown inline next to a metric value. */
+function GrowthInline({ value }: { value: number | null }) {
+  if (value === null) return <span className="text-[10px] font-semibold text-[#2563EB]">Baru</span>;
+  const positive = value >= 0;
+  return (
+    <span className={`text-[10px] font-semibold ${positive ? "text-emerald-600" : "text-rose-600"}`}>
+      {positive ? "▲" : "▼"} {Math.abs(value).toFixed(1)}%
+    </span>
+  );
+}
+
+function PicMetric({
+  label,
+  metric,
+  format,
+  valueClassName = "font-semibold text-[#14213D]",
+}: {
+  label: string;
+  metric: MetricValue;
+  format: (n: number) => string;
+  valueClassName?: string;
+}) {
+  return (
+    <div>
+      <dt className="kpi-label">{label}</dt>
+      <dd className="mt-0.5 flex flex-wrap items-baseline gap-x-1.5">
+        <span className={valueClassName}>{format(metric.current)}</span>
+        <GrowthInline value={metric.growthPct} />
+      </dd>
+    </div>
+  );
+}
+
 export function AffiliatePicPerformance({ rows }: { rows: AffiliatePicRow[] }) {
-  const maxGmv = Math.max(...rows.map((row) => row.gmv), 1);
+  const maxGmv = Math.max(...rows.map((row) => row.gmv.current), 1);
   return (
     <section className="mt-7">
       <div>
         <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#2563EB]">Affiliate Ownership</div>
         <h2 className="gfx-section-title mt-1">Performance by PIC</h2>
-        <p className="gfx-section-desc mt-1">Setiap AM bertanggung jawab atas creator yang mereka onboard. Angka gabungan video + LIVE, dibandingkan dengan periode sebelumnya yang setara.</p>
+        <p className="gfx-section-desc mt-1">Setiap AM bertanggung jawab atas creator yang mereka onboard. Angka gabungan video + LIVE + product card; tiap metrik dibandingkan dengan periode sebelumnya yang setara.</p>
       </div>
 
       {rows.length === 0 ? (
@@ -42,52 +75,22 @@ export function AffiliatePicPerformance({ rows }: { rows: AffiliatePicRow[] }) {
                 <Avatar seed={row.pic.avatarSeed} label={row.pic.name} size={30} />
                 <div>
                   <div className="font-semibold text-[#14213D]">{row.pic.name}</div>
-                  <div className="text-[10px] text-[#7A8AA3]">{integer(row.creatorCount)} creator · {integer(row.videoQuantity)} video</div>
+                  <div className="text-[10px] text-[#7A8AA3]">{integer(row.creatorCount.current)} creator · {integer(row.videoQuantity.current)} video</div>
                 </div>
               </div>
 
-              <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-[11px]">
-                <div>
-                  <dt className="kpi-label">Creators</dt>
-                  <dd className="font-semibold text-[#14213D]">{integer(row.creatorCount)}</dd>
-                </div>
-                <div>
-                  <dt className="kpi-label">Videos</dt>
-                  <dd className="font-semibold text-[#14213D]">{integer(row.videoQuantity)}</dd>
-                </div>
-                <div>
-                  <dt className="kpi-label">Total GMV</dt>
-                  <dd className="font-bold text-[#2563EB]">{compactIdr(row.gmv)}</dd>
-                </div>
-                <div>
-                  <dt className="kpi-label">Total NMV</dt>
-                  <dd className="font-semibold text-[#0E7490]">{compactIdr(row.nmv)}</dd>
-                </div>
-                <div>
-                  <dt className="kpi-label">GMV Live</dt>
-                  <dd className="text-[#4B5D78]">{compactIdr(row.gmvLive)}</dd>
-                </div>
-                <div>
-                  <dt className="kpi-label">GMV Video</dt>
-                  <dd className="text-[#4B5D78]">{compactIdr(row.gmvVideo)}</dd>
-                </div>
-                <div>
-                  <dt className="kpi-label">NMV Video</dt>
-                  <dd className="text-[#4B5D78]">{compactIdr(row.nmvVideo)}</dd>
-                </div>
-                <div>
-                  <dt className="kpi-label">NMV Live</dt>
-                  <dd className="text-[#4B5D78]">{compactIdr(row.nmvLive)}</dd>
-                </div>
+              <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2.5 text-[11px]">
+                <PicMetric label="Creators" metric={row.creatorCount} format={integer} />
+                <PicMetric label="Videos" metric={row.videoQuantity} format={integer} />
+                <PicMetric label="Total GMV" metric={row.gmv} format={compactIdr} valueClassName="font-bold text-[#2563EB]" />
+                <PicMetric label="Total NMV" metric={row.nmv} format={compactIdr} valueClassName="font-semibold text-[#0E7490]" />
+                <PicMetric label="GMV Video" metric={row.gmvVideo} format={compactIdr} valueClassName="text-[#4B5D78]" />
+                <PicMetric label="GMV Live" metric={row.gmvLive} format={compactIdr} valueClassName="text-[#4B5D78]" />
+                <PicMetric label="GMV Product Card" metric={row.gmvProductCard} format={compactIdr} valueClassName="text-[#4B5D78]" />
               </dl>
 
               <div className="mt-3 h-1.5 bg-[#E8EEF5]">
-                <div className="h-full bg-[#2563EB]" style={{ width: `${(row.gmv / maxGmv) * 100}%` }} />
-              </div>
-
-              <div className="mt-3 flex items-center gap-2 border-t border-[#E8EEF5] pt-2">
-                <GrowthBadge value={row.growthPct} />
-                <span className="text-[10px] text-[#7A8AA3]">vs periode sebelumnya</span>
+                <div className="h-full bg-[#2563EB]" style={{ width: `${(row.gmv.current / maxGmv) * 100}%` }} />
               </div>
             </article>
           ))}
@@ -98,12 +101,13 @@ export function AffiliatePicPerformance({ rows }: { rows: AffiliatePicRow[] }) {
 }
 
 const KPI_TILES: { label: string; value: (row: AffiliatePicRow) => string }[] = [
-  { label: "Creators", value: (row) => integer(row.creatorCount) },
-  { label: "Videos", value: (row) => integer(row.videoQuantity) },
-  { label: "Total GMV", value: (row) => compactIdr(row.gmv) },
-  { label: "Total NMV", value: (row) => compactIdr(row.nmv) },
-  { label: "GMV Live", value: (row) => compactIdr(row.gmvLive) },
-  { label: "GMV Video", value: (row) => compactIdr(row.gmvVideo) },
+  { label: "Creators", value: (row) => integer(row.creatorCount.current) },
+  { label: "Videos", value: (row) => integer(row.videoQuantity.current) },
+  { label: "Total GMV", value: (row) => compactIdr(row.gmv.current) },
+  { label: "Total NMV", value: (row) => compactIdr(row.nmv.current) },
+  { label: "GMV Video", value: (row) => compactIdr(row.gmvVideo.current) },
+  { label: "GMV Live", value: (row) => compactIdr(row.gmvLive.current) },
+  { label: "GMV Product Card", value: (row) => compactIdr(row.gmvProductCard.current) },
 ];
 
 const BREAKDOWN_COLUMNS: DataTableColumn<AffiliatePicCreatorRow>[] = [
@@ -130,9 +134,9 @@ const BREAKDOWN_COLUMNS: DataTableColumn<AffiliatePicCreatorRow>[] = [
   { key: "videoQuantity", header: "Videos", sortAccessor: (row) => row.videoQuantity, cellClassName: "whitespace-nowrap font-semibold", cell: (row) => row.videoQuantity },
   { key: "gmv", header: "GMV", sortAccessor: (row) => row.gmv, cellClassName: "whitespace-nowrap font-bold text-[#2563EB]", cell: (row) => compactIdr(row.gmv) },
   { key: "nmv", header: "NMV", sortAccessor: (row) => row.nmv, cellClassName: "whitespace-nowrap font-semibold text-[#0E7490]", cell: (row) => compactIdr(row.nmv) },
-  { key: "gmvLive", header: "GMV Live", sortAccessor: (row) => row.gmvLive, cellClassName: "whitespace-nowrap text-[#4B5D78]", cell: (row) => compactIdr(row.gmvLive) },
   { key: "gmvVideo", header: "GMV Video", sortAccessor: (row) => row.gmvVideo, cellClassName: "whitespace-nowrap text-[#4B5D78]", cell: (row) => compactIdr(row.gmvVideo) },
-  { key: "nmvVideo", header: "NMV Video", sortAccessor: (row) => row.nmvVideo, cellClassName: "whitespace-nowrap text-[#4B5D78]", cell: (row) => compactIdr(row.nmvVideo) },
+  { key: "gmvLive", header: "GMV Live", sortAccessor: (row) => row.gmvLive, cellClassName: "whitespace-nowrap text-[#4B5D78]", cell: (row) => compactIdr(row.gmvLive) },
+  { key: "gmvProductCard", header: "GMV Product Card", sortAccessor: (row) => row.gmvProductCard, cellClassName: "whitespace-nowrap text-[#4B5D78]", cell: (row) => compactIdr(row.gmvProductCard) },
   { key: "growthPct", header: "vs previous", sortAccessor: (row) => row.growthPct, cell: (row) => <GrowthBadge value={row.growthPct} /> },
 ];
 
@@ -146,7 +150,7 @@ export function AffiliatePicBreakdown({
       <div>
         <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#2563EB]">Per-PIC Detail</div>
         <h2 className="gfx-section-title mt-1">Creator breakdown by PIC</h2>
-        <p className="gfx-section-desc mt-1">KPI strip plus daftar creator per AM, dengan growth vs periode sebelumnya. GMV/NMV memisahkan channel video dan LIVE.</p>
+        <p className="gfx-section-desc mt-1">KPI strip plus daftar creator per AM, dengan growth vs periode sebelumnya. GMV memisahkan channel video, LIVE, dan product card.</p>
       </div>
 
       {groups.length === 0 && (
@@ -159,11 +163,11 @@ export function AffiliatePicBreakdown({
             <Avatar seed={group.pic.avatarSeed} label={group.pic.name} size={28} />
             <div>
               <div className="font-semibold text-[#14213D]">{group.pic.name}</div>
-              <div className="text-[10px] text-[#7A8AA3]">{integer(group.totals.creatorCount)} creator aktif</div>
+              <div className="text-[10px] text-[#7A8AA3]">{integer(group.totals.creatorCount.current)} creator aktif</div>
             </div>
           </div>
 
-          <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
             {KPI_TILES.map((tile) => (
               <div key={tile.label} className="gfx-kpi">
                 <div className="kpi-label">{tile.label}</div>
@@ -178,7 +182,7 @@ export function AffiliatePicBreakdown({
               rows={group.creators}
               rowKey={(row) => row.creator.creatorId}
               initialSort={{ key: "gmv", direction: "desc" }}
-              minWidth={1040}
+              minWidth={1180}
               size="xs"
               cellClassName="px-3 py-3"
               emptyMessage="Belum ada creator aktif untuk AM ini pada filter ini."

@@ -395,15 +395,35 @@ export function findUnmatchedUsernames(facts: AffiliateDailyFact[], creators: Af
 interface ChannelSums {
   gmvVideo: number;
   gmvLive: number;
+  gmvCard: number;
   nmvVideo: number;
   nmvLive: number;
+  nmvCard: number;
   commissionVideo: number;
   commissionLive: number;
+  commissionCard: number;
 }
 
 function emptyChannelSums(): ChannelSums {
-  return { gmvVideo: 0, gmvLive: 0, nmvVideo: 0, nmvLive: 0, commissionVideo: 0, commissionLive: 0 };
+  return { gmvVideo: 0, gmvLive: 0, gmvCard: 0, nmvVideo: 0, nmvLive: 0, nmvCard: 0, commissionVideo: 0, commissionLive: 0, commissionCard: 0 };
 }
+
+function addChannelSums(a: ChannelSums, b: ChannelSums): ChannelSums {
+  return {
+    gmvVideo: a.gmvVideo + b.gmvVideo,
+    gmvLive: a.gmvLive + b.gmvLive,
+    gmvCard: a.gmvCard + b.gmvCard,
+    nmvVideo: a.nmvVideo + b.nmvVideo,
+    nmvLive: a.nmvLive + b.nmvLive,
+    nmvCard: a.nmvCard + b.nmvCard,
+    commissionVideo: a.commissionVideo + b.commissionVideo,
+    commissionLive: a.commissionLive + b.commissionLive,
+    commissionCard: a.commissionCard + b.commissionCard,
+  };
+}
+
+const totalGmv = (s: ChannelSums) => s.gmvVideo + s.gmvLive + s.gmvCard;
+const totalNmv = (s: ChannelSums) => s.nmvVideo + s.nmvLive + s.nmvCard;
 
 function sumByCreatorChannel(
   facts: AffiliateDailyFact[],
@@ -419,6 +439,10 @@ function sumByCreatorChannel(
       entry.gmvLive += fact.gmv;
       entry.nmvLive += nmv;
       entry.commissionLive += fact.commission;
+    } else if (fact.channel === "PRODUCT_CARD") {
+      entry.gmvCard += fact.gmv;
+      entry.nmvCard += nmv;
+      entry.commissionCard += fact.commission;
     } else {
       entry.gmvVideo += fact.gmv;
       entry.nmvVideo += nmv;
@@ -427,6 +451,26 @@ function sumByCreatorChannel(
     result.set(creator.creatorId, entry);
   }
   return result;
+}
+
+function videoCountByPic(
+  videos: AffiliateVideo[],
+  creators: AffiliateCreatorProfile[],
+  snapshots: CreatorLevelSnapshot[],
+  filters: AffiliateFilters,
+  startDate: string,
+  endDate: string
+): Map<string, number> {
+  const identityMap = buildCreatorIdentityMap(creators);
+  const seen = new Map<string, Set<string>>();
+  for (const video of filterVideos(videos, creators, snapshots, filters, startDate, endDate)) {
+    const creator = identityMap.get(normalizeUsername(video.creatorUsername));
+    if (!creator) continue;
+    const set = seen.get(creator.pic) ?? new Set<string>();
+    set.add(video.videoId);
+    seen.set(creator.pic, set);
+  }
+  return new Map([...seen.entries()].map(([pic, set]) => [pic, set.size]));
 }
 
 export interface AffiliatePicGroup {
@@ -461,12 +505,32 @@ export function buildAffiliatePicBreakdown(
     identityMap
   );
 
-  const previousGmvByPic = new Map<string, number>();
-  for (const [creatorId, sums] of previousSums.entries()) {
-    const creator = creatorById.get(creatorId);
-    if (!creator) continue;
-    previousGmvByPic.set(creator.pic, (previousGmvByPic.get(creator.pic) ?? 0) + sums.gmvVideo + sums.gmvLive);
-  }
+  // Per-PIC channel sums + active-creator counts, current vs previous.
+  const curByPic = new Map<string, ChannelSums>();
+  const prevByPic = new Map<string, ChannelSums>();
+  const curCreatorsByPic = new Map<string, Set<string>>();
+  const prevCreatorsByPic = new Map<string, Set<string>>();
+  const roll = (
+    sums: Map<string, ChannelSums>,
+    byPic: Map<string, ChannelSums>,
+    creatorsByPic: Map<string, Set<string>>
+  ) => {
+    for (const [creatorId, s] of sums.entries()) {
+      const creator = creatorById.get(creatorId);
+      if (!creator) continue;
+      byPic.set(creator.pic, addChannelSums(byPic.get(creator.pic) ?? emptyChannelSums(), s));
+      if (totalGmv(s) > 0) {
+        const set = creatorsByPic.get(creator.pic) ?? new Set<string>();
+        set.add(creatorId);
+        creatorsByPic.set(creator.pic, set);
+      }
+    }
+  };
+  roll(currentSums, curByPic, curCreatorsByPic);
+  roll(previousSums, prevByPic, prevCreatorsByPic);
+
+  const curVideos = videoCountByPic(videos, creators, snapshots, filters, filters.startDate, filters.endDate);
+  const prevVideos = videoCountByPic(videos, creators, snapshots, filters, previous.startDate, previous.endDate);
 
   const candidateIds = new Set<string>([...currentSums.keys(), ...videoRowByCreator.keys()]);
   const rowByCreator = new Map<string, AffiliatePicCreatorRow>();
@@ -476,8 +540,7 @@ export function buildAffiliatePicBreakdown(
     const cur = currentSums.get(creatorId) ?? emptyChannelSums();
     const prev = previousSums.get(creatorId) ?? emptyChannelSums();
     const videoRow = videoRowByCreator.get(creatorId);
-    const gmv = cur.gmvVideo + cur.gmvLive;
-    const previousGmv = prev.gmvVideo + prev.gmvLive;
+    const gmv = totalGmv(cur);
     const row: AffiliatePicCreatorRow = {
       creator,
       level: videoRow?.level ?? getCreatorLevel(creatorId, filters.endDate, snapshots),
@@ -485,12 +548,14 @@ export function buildAffiliatePicBreakdown(
       validVideoQuantity: videoRow?.validVideoQuantity ?? 0,
       gmvVideo: cur.gmvVideo,
       gmvLive: cur.gmvLive,
+      gmvProductCard: cur.gmvCard,
       nmvVideo: cur.nmvVideo,
       nmvLive: cur.nmvLive,
+      nmvProductCard: cur.nmvCard,
       gmv,
-      nmv: cur.nmvVideo + cur.nmvLive,
-      commission: cur.commissionVideo + cur.commissionLive,
-      growthPct: growthPct(gmv, previousGmv),
+      nmv: totalNmv(cur),
+      commission: cur.commissionVideo + cur.commissionLive + cur.commissionCard,
+      growthPct: growthPct(gmv, totalGmv(prev)),
     };
     if (row.gmv > 0 || row.videoQuantity > 0) rowByCreator.set(creatorId, row);
   }
@@ -500,25 +565,21 @@ export function buildAffiliatePicBreakdown(
       const groupCreators = [...rowByCreator.values()]
         .filter((row) => row.creator.pic === pic.picId)
         .sort((a, b) => b.gmv - a.gmv);
-      const totalGmv = groupCreators.reduce((sum, row) => sum + row.gmv, 0);
+      const cur = curByPic.get(pic.picId) ?? emptyChannelSums();
+      const prev = prevByPic.get(pic.picId) ?? emptyChannelSums();
       const totals: AffiliatePicRow = {
         pic,
-        creatorCount: groupCreators.length,
-        videoQuantity: groupCreators.reduce((sum, row) => sum + row.videoQuantity, 0),
-        validVideoQuantity: groupCreators.reduce((sum, row) => sum + row.validVideoQuantity, 0),
-        gmvVideo: groupCreators.reduce((sum, row) => sum + row.gmvVideo, 0),
-        gmvLive: groupCreators.reduce((sum, row) => sum + row.gmvLive, 0),
-        nmvVideo: groupCreators.reduce((sum, row) => sum + row.nmvVideo, 0),
-        nmvLive: groupCreators.reduce((sum, row) => sum + row.nmvLive, 0),
-        gmv: totalGmv,
-        nmv: groupCreators.reduce((sum, row) => sum + row.nmv, 0),
-        commission: groupCreators.reduce((sum, row) => sum + row.commission, 0),
-        growthPct: growthPct(totalGmv, previousGmvByPic.get(pic.picId) ?? 0),
+        creatorCount: metric(groupCreators.length, prevCreatorsByPic.get(pic.picId)?.size ?? 0),
+        videoQuantity: metric(curVideos.get(pic.picId) ?? 0, prevVideos.get(pic.picId) ?? 0),
+        gmv: metric(totalGmv(cur), totalGmv(prev)),
+        nmv: metric(totalNmv(cur), totalNmv(prev)),
+        gmvVideo: metric(cur.gmvVideo, prev.gmvVideo),
+        gmvLive: metric(cur.gmvLive, prev.gmvLive),
+        gmvProductCard: metric(cur.gmvCard, prev.gmvCard),
       };
       return { pic, totals, creators: groupCreators };
     })
-    .filter((group) => group.totals.creatorCount > 0)
-    .sort((a, b) => b.totals.gmv - a.totals.gmv);
+    .filter((group) => group.totals.creatorCount.current > 0);
 }
 
 export function buildAffiliatePicRows(
