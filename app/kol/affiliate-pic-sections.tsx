@@ -40,27 +40,15 @@ function metricCell(value: MetricValue, format: (n: number) => string, valueClas
   );
 }
 
-function PicMetric({
-  label,
-  metric,
-  format,
-  valueClassName = "font-semibold text-[#14213D]",
-}: {
-  label: string;
-  metric: MetricValue;
-  format: (n: number) => string;
-  valueClassName?: string;
-}) {
-  return (
-    <div>
-      <dt className="kpi-label">{label}</dt>
-      <dd className="mt-0.5 flex flex-wrap items-baseline gap-x-1.5">
-        <span className={valueClassName}>{format(metric.current)}</span>
-        <GrowthInline value={metric.growthPct} />
-      </dd>
-    </div>
-  );
-}
+const PIC_METRICS: { label: string; pick: (row: AffiliatePicRow) => MetricValue; format: (n: number) => string; valueClassName: string }[] = [
+  { label: "Creators", pick: (r) => r.creatorCount, format: integer, valueClassName: "font-semibold text-[#14213D]" },
+  { label: "Videos", pick: (r) => r.videoQuantity, format: integer, valueClassName: "font-semibold text-[#14213D]" },
+  { label: "Total GMV", pick: (r) => r.gmv, format: compactIdr, valueClassName: "font-bold text-[#2563EB]" },
+  { label: "Total NMV", pick: (r) => r.nmv, format: compactIdr, valueClassName: "font-semibold text-[#0E7490]" },
+  { label: "GMV Video", pick: (r) => r.gmvVideo, format: compactIdr, valueClassName: "text-[#4B5D78]" },
+  { label: "GMV Live", pick: (r) => r.gmvLive, format: compactIdr, valueClassName: "text-[#4B5D78]" },
+  { label: "GMV Product Card", pick: (r) => r.gmvProductCard, format: compactIdr, valueClassName: "text-[#4B5D78]" },
+];
 
 export function AffiliatePicPerformance({ rows }: { rows: AffiliatePicRow[] }) {
   const maxGmv = Math.max(...rows.map((row) => row.gmv.current), 1);
@@ -75,26 +63,38 @@ export function AffiliatePicPerformance({ rows }: { rows: AffiliatePicRow[] }) {
       {rows.length === 0 ? (
         <div className="gfx-card mt-3 p-4 text-xs text-[#7A8AA3]">Belum ada PIC dengan aktivitas pada filter ini.</div>
       ) : (
-        <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-3 grid gap-3 lg:grid-cols-2">
           {rows.map((row) => (
             <article key={row.pic.picId} className="gfx-card p-4">
-              <div className="flex items-center gap-2">
-                <Avatar seed={row.pic.avatarSeed} label={row.pic.name} size={30} />
-                <div>
-                  <div className="font-semibold text-[#14213D]">{row.pic.name}</div>
-                  <div className="text-[10px] text-[#7A8AA3]">{integer(row.creatorCount.current)} creator · {integer(row.videoQuantity.current)} video</div>
+              <div className="flex flex-wrap gap-x-6 gap-y-3">
+                {/* name */}
+                <div className="flex w-[150px] shrink-0 items-start gap-2">
+                  <Avatar seed={row.pic.avatarSeed} label={row.pic.name} size={30} />
+                  <div>
+                    <div className="font-semibold text-[#14213D]">{row.pic.name}</div>
+                    <div className="text-[10px] text-[#7A8AA3]">{integer(row.creatorCount.current)} creator · {integer(row.videoQuantity.current)} video</div>
+                  </div>
+                </div>
+
+                {/* metric | value | vs previous */}
+                <div className="min-w-[260px] flex-1">
+                  <div className="grid grid-cols-[1fr_auto_auto] items-center gap-x-4 gap-y-1.5 text-[11px]">
+                    <span className="kpi-label">Metrik</span>
+                    <span className="kpi-label text-right">Nilai</span>
+                    <span className="kpi-label text-right">vs prev</span>
+                    {PIC_METRICS.map((m) => {
+                      const value = m.pick(row);
+                      return (
+                        <div key={m.label} className="contents">
+                          <span className="text-[#536984]">{m.label}</span>
+                          <span className={`text-right ${m.valueClassName}`}>{m.format(value.current)}</span>
+                          <span className="text-right"><GrowthInline value={value.growthPct} /></span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-
-              <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2.5 text-[11px]">
-                <PicMetric label="Creators" metric={row.creatorCount} format={integer} />
-                <PicMetric label="Videos" metric={row.videoQuantity} format={integer} />
-                <PicMetric label="Total GMV" metric={row.gmv} format={compactIdr} valueClassName="font-bold text-[#2563EB]" />
-                <PicMetric label="Total NMV" metric={row.nmv} format={compactIdr} valueClassName="font-semibold text-[#0E7490]" />
-                <PicMetric label="GMV Video" metric={row.gmvVideo} format={compactIdr} valueClassName="text-[#4B5D78]" />
-                <PicMetric label="GMV Live" metric={row.gmvLive} format={compactIdr} valueClassName="text-[#4B5D78]" />
-                <PicMetric label="GMV Product Card" metric={row.gmvProductCard} format={compactIdr} valueClassName="text-[#4B5D78]" />
-              </dl>
 
               <div className="mt-3 h-1.5 bg-[#E8EEF5]">
                 <div className="h-full bg-[#2563EB]" style={{ width: `${(row.gmv.current / maxGmv) * 100}%` }} />
