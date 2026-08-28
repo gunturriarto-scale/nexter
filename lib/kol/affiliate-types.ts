@@ -1,6 +1,6 @@
 export type AffiliateTimeGrain = "daily" | "weekly" | "monthly";
 
-export type AffiliateChannel = "VIDEO" | "LIVE";
+export type AffiliateChannel = "VIDEO" | "LIVE" | "PRODUCT_CARD";
 
 export type CompetitionType =
   | "MONTHLY_COMPETITION"
@@ -131,34 +131,35 @@ export interface AffiliateCreatorRow {
   growthPct: number | null;
 }
 
+/**
+ * Per-PIC scoreboard. Every headline number carries its own current/previous/
+ * growth so the card can show a "% vs previous" next to each metric.
+ */
 export interface AffiliatePicRow {
   pic: AffiliatePic;
-  creatorCount: number; // creators under this PIC with activity in scope
-  videoQuantity: number;
-  validVideoQuantity: number;
-  gmv: number; // video + live
-  nmv: number; // video + live
-  gmvVideo: number;
-  gmvLive: number;
-  nmvVideo: number;
-  nmvLive: number;
-  commission: number;
-  growthPct: number | null; // total GMV vs previous equal-length period
+  creatorCount: MetricValue; // creators under this PIC with activity in scope
+  videoQuantity: MetricValue;
+  gmv: MetricValue; // video + live + product card
+  nmv: MetricValue; // video + live + product card
+  gmvVideo: MetricValue;
+  gmvLive: MetricValue;
+  gmvProductCard: MetricValue;
 }
 
+/**
+ * Per-creator row under a PIC. Every number carries current/previous/growth so
+ * the breakdown table can print a small "% vs previous" under each value.
+ */
 export interface AffiliatePicCreatorRow {
   creator: AffiliateCreatorProfile;
   level: string | null;
-  videoQuantity: number;
-  validVideoQuantity: number;
-  gmv: number;
-  nmv: number;
-  gmvVideo: number;
-  gmvLive: number;
-  nmvVideo: number;
-  nmvLive: number;
-  commission: number;
-  growthPct: number | null;
+  gmv: MetricValue; // video + live + product card
+  nmv: MetricValue;
+  gmvVideo: MetricValue;
+  videoQuantity: MetricValue;
+  gmvLive: MetricValue;
+  liveSessions: MetricValue;
+  gmvProductCard: MetricValue;
 }
 
 export interface AffiliateVideoRow {

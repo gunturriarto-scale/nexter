@@ -1,5 +1,9 @@
 # HERMES — Data Analyst (GLOW FX)
 
+> **Developer baru:** mulai dari [`docs/developer-handoff.md`](docs/developer-handoff.md).
+> Dokumen tersebut menjelaskan arsitektur, sumber API setiap mock dashboard, mapping data,
+> status implementasi, KPI, security boundary, dan urutan migrasi ke production data.
+
 TikTok commerce intelligence untuk GLOW FX. MVP saat ini: **GMV Max ROI Dashboard**
 (cost/ROI/funnel/watch-through per campaign → produk → video/livestream dari TikTok
 Business API GMV Max).

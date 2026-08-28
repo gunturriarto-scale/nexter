@@ -232,9 +232,40 @@ function makeLiveFacts(creators: AffiliateCreatorProfile[]): AffiliateDailyFact[
   return facts;
 }
 
-// Combined VIDEO + LIVE stream. Existing builders sum every scoped fact, so
-// affiliate GMV / NMV / trend / leaderboard now reflect video + LIVE together.
+// GMV attributed to the product card / anchor on content (a placement distinct
+// from the video body and from LIVE). Smaller, steadier stream per creator.
+function makeProductCardFacts(creators: AffiliateCreatorProfile[]): AffiliateDailyFact[] {
+  const facts: AffiliateDailyFact[] = [];
+  for (const [g, creator] of creators.entries()) {
+    const creatorScale = 0.3 + Math.min(1.8, creator.followerCount / 400_000);
+    for (const [dateIndex, date] of LIVE_DAYS.entries()) {
+      if ((dateIndex + g) % 2 !== 0) continue; // roughly every other day
+      const weekendLift = [0, 6].includes(new Date(`${date}T00:00:00Z`).getUTCDay()) ? 1.08 : 1;
+      const wave = 0.82 + ((dateIndex * 3 + g * 7) % 17) / 45;
+      const gmv = Math.round(1_180_000 * creatorScale * weekendLift * wave);
+      const adj = (dateIndex + g * 5) % 21;
+      facts.push({
+        date,
+        creatorUsername: creator.username,
+        campaignId: LIVE_CAMPAIGNS[(g + dateIndex + 1) % LIVE_CAMPAIGNS.length],
+        videoId: "",
+        channel: "PRODUCT_CARD",
+        gmv,
+        cancelledValue: adj === 6 ? Math.round(gmv * 0.04) : 0,
+        returnedValue: adj === 15 ? Math.round(gmv * 0.028) : 0,
+        refundedValue: 0,
+        orders: Math.max(1, Math.round(gmv / 150_000)),
+        commission: Math.round(gmv * 0.08),
+      });
+    }
+  }
+  return facts;
+}
+
+// Combined VIDEO + LIVE + PRODUCT_CARD stream. Existing builders sum every scoped
+// fact, so affiliate GMV / NMV / trend / leaderboard reflect all channels together.
 export const MOCK_AFFILIATE_DAILY_FACTS: AffiliateDailyFact[] = [
   ...makeVideoFacts(MOCK_AFFILIATE_PROFILES, MOCK_AFFILIATE_VIDEOS),
   ...makeLiveFacts(MOCK_AFFILIATE_PROFILES),
+  ...makeProductCardFacts(MOCK_AFFILIATE_PROFILES),
 ];

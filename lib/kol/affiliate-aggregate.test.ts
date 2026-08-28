@@ -145,6 +145,7 @@ describe("pic rollup", () => {
     fact("2026-08-02", 1_000), // creatorA video
     { ...fact("2026-08-02", 3_000), creatorUsername: "@creator.two", videoId: "v2" }, // creatorB video
     { ...fact("2026-08-02", 400, { returnedValue: 100 }), videoId: "", channel: "LIVE" }, // creatorA live, nmv 300
+    { ...fact("2026-08-02", 200), videoId: "", channel: "PRODUCT_CARD" }, // creatorA product card
     { ...fact("2026-08-03", 500), creatorUsername: "@creator.two", videoId: "", channel: "LIVE" }, // creatorB live
   ];
   const filters: AffiliateFilters = { startDate: "2026-08-01", endDate: "2026-08-03", grain: "daily" };
@@ -153,25 +154,31 @@ describe("pic rollup", () => {
   const snapshots: CreatorLevelSnapshot[] = [level, levelB];
   const pics: AffiliatePic[] = [picA, picB];
 
-  it("splits GMV/NMV by channel and counts creators per PIC", () => {
+  it("keeps PIC roster order and carries per-metric current/previous/growth", () => {
     const rows = buildAffiliatePicRows(facts, videos, profiles, campaigns, snapshots, pics, filters);
-    expect(rows.map((row) => row.pic.picId)).toEqual(["pic-b", "pic-a"]); // 3500 > 1400
+    expect(rows.map((row) => row.pic.picId)).toEqual(["pic-a", "pic-b"]); // roster order, not GMV order
     const a = rows.find((row) => row.pic.picId === "pic-a")!;
-    expect(a.creatorCount).toBe(1);
-    expect(a.gmvVideo).toBe(1_000);
-    expect(a.gmvLive).toBe(400);
-    expect(a.gmv).toBe(1_400);
-    expect(a.nmvVideo).toBe(1_000);
-    expect(a.nmv).toBe(1_300); // 1000 + (400 - 100)
-    expect(a.growthPct).toBeNull(); // previous window empty, current != 0
+    expect(a.creatorCount.current).toBe(1);
+    expect(a.videoQuantity.current).toBe(1);
+    expect(a.gmvVideo.current).toBe(1_000);
+    expect(a.gmvLive.current).toBe(400);
+    expect(a.gmvProductCard.current).toBe(200);
+    expect(a.gmv.current).toBe(1_600); // 1000 + 400 + 200
+    expect(a.nmv.current).toBe(1_500); // 1000 + (400 - 100) + 200
+    expect(a.gmv.growthPct).toBeNull(); // previous window empty, current != 0
   });
 
-  it("breakdown lists each creator and reconciles to totals", () => {
+  it("breakdown lists each creator with per-metric current/previous", () => {
     const groups = buildAffiliatePicBreakdown(facts, videos, profiles, campaigns, snapshots, pics, filters);
     const a = groups.find((group) => group.pic.picId === "pic-a")!;
     expect(a.creators).toHaveLength(1);
-    expect(a.creators[0].gmv).toBe(a.totals.gmv);
-    expect(a.creators[0].gmvLive).toBe(400);
-    expect(a.creators[0].gmvVideo).toBe(1_000);
+    const c = a.creators[0];
+    expect(c.gmv.current).toBe(a.totals.gmv.current);
+    expect(c.gmvLive.current).toBe(400);
+    expect(c.gmvVideo.current).toBe(1_000);
+    expect(c.gmvProductCard.current).toBe(200);
+    expect(c.videoQuantity.current).toBe(1);
+    expect(c.liveSessions.current).toBe(1); // one LIVE fact row
+    expect(c.gmv.growthPct).toBeNull(); // previous window empty
   });
 });
