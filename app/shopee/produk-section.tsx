@@ -1,7 +1,61 @@
+"use client";
+
 import { ParetoRow } from "@/lib/shopee/aggregate";
 import { ShopeeProduct } from "@/lib/shopee/types";
 import { formatIdrCompact, formatNumber } from "@/lib/shopee/format";
 import { ProductStatusChip } from "@/app/shopee/ui";
+import { DataTable, type DataTableColumn } from "@/components/data-table";
+
+const PRODUCT_COLUMNS: DataTableColumn<ShopeeProduct>[] = [
+  {
+    key: "itemName",
+    header: "Produk",
+    sortAccessor: (p) => p.itemName,
+    cell: (p) => (
+      <>
+        <div className="font-medium text-[#14213D]">{p.itemName}</div>
+        <div className="text-xs text-[#7A8AA3]">{p.itemSku}</div>
+        {p.models.length > 1 && (
+          <div className="mt-1 flex flex-wrap gap-1">
+            {p.models.map((m) => (
+              <span key={m.modelId} className="gfx-chip bg-[#EFF6FF] text-[#0891B2]">
+                {m.modelName} · {m.stock}
+              </span>
+            ))}
+          </div>
+        )}
+      </>
+    ),
+  },
+  { key: "categoryName", header: "Kategori", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (p) => p.categoryName, cell: (p) => p.categoryName },
+  { key: "price", header: "Harga", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (p) => p.price, cell: (p) => formatIdrCompact(p.price) },
+  { key: "stock", header: "Stok", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (p) => p.stock, cell: (p) => formatNumber(p.stock) },
+  { key: "views", header: "Views", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (p) => p.views, cell: (p) => formatNumber(p.views) },
+  { key: "unitsSold", header: "Terjual", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (p) => p.unitsSold, cell: (p) => formatNumber(p.unitsSold) },
+  { key: "revenue", header: "Revenue", cellClassName: "whitespace-nowrap font-semibold text-[#2563EB]", sortAccessor: (p) => p.revenue, cell: (p) => formatIdrCompact(p.revenue) },
+  { key: "ratingStar", header: "Rating", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (p) => p.ratingStar, cell: (p) => `⭐ ${p.ratingStar.toFixed(1)}` },
+  { key: "status", header: "Status", cellClassName: "whitespace-nowrap", sortAccessor: (p) => p.status, cell: (p) => <ProductStatusChip status={p.status} /> },
+];
+
+const PARETO_COLUMNS: DataTableColumn<ParetoRow>[] = [
+  { key: "idx", header: "#", cellClassName: "whitespace-nowrap text-[#7A8AA3]", cell: (_row, index) => index + 1 },
+  { key: "name", header: "Produk", cellClassName: "font-medium text-[#14213D]", sortAccessor: (row) => row.product.itemName, cell: (row) => row.product.itemName },
+  { key: "revenue", header: "Revenue", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (row) => row.revenue, cell: (row) => formatIdrCompact(row.revenue) },
+  {
+    key: "cumulative",
+    header: "% Cumulative",
+    cellClassName: "whitespace-nowrap",
+    sortAccessor: (row) => row.cumulativePct,
+    cell: (row) => (
+      <div className="flex items-center gap-2">
+        <div className="h-1.5 w-16 overflow-hidden rounded-none bg-[#EDF3F8]">
+          <div className="h-full bg-gradient-to-r from-[#2563EB] to-[#0891B2]" style={{ width: `${Math.min(row.cumulativePct, 100)}%` }} />
+        </div>
+        <span className="text-[#4B5D78]">{row.cumulativePct.toFixed(0)}%</span>
+      </div>
+    ),
+  },
+];
 
 export function ProdukSection({
   products,
@@ -56,47 +110,16 @@ export function ProdukSection({
       <section className="mt-8">
         <h2 className="gfx-section-title">Performa produk</h2>
         <p className="gfx-section-desc mt-1">Diurutkan by revenue. Klik varian buat lihat stok per model.</p>
-        <div className="gfx-table-wrap mt-3 overflow-x-auto">
-          <table className="w-full min-w-[760px] text-left text-sm">
-            <thead>
-              <tr>
-                {["Produk", "Kategori", "Harga", "Stok", "Views", "Terjual", "Revenue", "Rating", "Status"].map((h) => (
-                  <th key={h} className="gfx-th px-3 py-2">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {products.map((p) => (
-                <tr key={p.itemId} className="gfx-row-border align-top">
-                  <td className="px-3 py-2">
-                    <div className="font-medium text-[#14213D]">{p.itemName}</div>
-                    <div className="text-xs text-[#7A8AA3]">{p.itemSku}</div>
-                    {p.models.length > 1 && (
-                      <div className="mt-1 flex flex-wrap gap-1">
-                        {p.models.map((m) => (
-                          <span key={m.modelId} className="gfx-chip bg-[#EFF6FF] text-[#0891B2]">
-                            {m.modelName} · {m.stock}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{p.categoryName}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(p.price)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(p.stock)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(p.views)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(p.unitsSold)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#2563EB]">{formatIdrCompact(p.revenue)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">⭐ {p.ratingStar.toFixed(1)}</td>
-                  <td className="whitespace-nowrap px-3 py-2">
-                    <ProductStatusChip status={p.status} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="mt-3">
+          <DataTable
+            columns={PRODUCT_COLUMNS}
+            rows={products}
+            rowKey={(p) => p.itemId}
+            initialSort={{ key: "revenue", direction: "desc" }}
+            minWidth={760}
+            cellClassName="px-3 py-2 align-top"
+            emptyMessage="Belum ada produk."
+          />
         </div>
       </section>
 
@@ -106,38 +129,14 @@ export function ProdukSection({
           Cumulative % revenue per produk, diurutkan dari terbesar — versi lengkap dari ringkasan di tab
           Eksekutif.
         </p>
-        <div className="gfx-table-wrap mt-3 overflow-x-auto">
-          <table className="w-full min-w-[560px] text-left text-sm">
-            <thead>
-              <tr>
-                {["#", "Produk", "Revenue", "% Cumulative"].map((h) => (
-                  <th key={h} className="gfx-th px-3 py-2">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {pareto.map((row, i) => (
-                <tr key={row.product.itemId} className="gfx-row-border">
-                  <td className="whitespace-nowrap px-3 py-2 text-[#7A8AA3]">{i + 1}</td>
-                  <td className="px-3 py-2 font-medium text-[#14213D]">{row.product.itemName}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(row.revenue)}</td>
-                  <td className="whitespace-nowrap px-3 py-2">
-                    <div className="flex items-center gap-2">
-                      <div className="h-1.5 w-16 overflow-hidden rounded-none bg-[#EDF3F8]">
-                        <div
-                          className="h-full bg-gradient-to-r from-[#2563EB] to-[#0891B2]"
-                          style={{ width: `${Math.min(row.cumulativePct, 100)}%` }}
-                        />
-                      </div>
-                      <span className="text-[#4B5D78]">{row.cumulativePct.toFixed(0)}%</span>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="mt-3">
+          <DataTable
+            columns={PARETO_COLUMNS}
+            rows={pareto}
+            rowKey={(row) => row.product.itemId}
+            minWidth={560}
+            emptyMessage="Belum ada data."
+          />
         </div>
       </section>
     </>

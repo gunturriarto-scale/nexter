@@ -1,8 +1,29 @@
+"use client";
+
 import { ShopeeLivestreamSession, ShopeeVideo } from "@/lib/shopee/types";
 import { formatDateTime, formatIdrCompact, formatNumber } from "@/lib/shopee/format";
 import { Card } from "@/app/shopee/ui";
 import { TrendChart } from "@/app/shopee/trend-chart";
 import { sumField } from "@/lib/shopee/aggregate";
+import { DataTable, type DataTableColumn } from "@/components/data-table";
+
+const LIVE_COLUMNS: DataTableColumn<ShopeeLivestreamSession>[] = [
+  { key: "title", header: "Sesi", cellClassName: "font-medium text-[#14213D]", sortAccessor: (l) => l.title, cell: (l) => l.title },
+  { key: "startTime", header: "Mulai", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (l) => l.startTime, cell: (l) => formatDateTime(l.startTime) },
+  { key: "durationMin", header: "Durasi", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (l) => l.durationMin, cell: (l) => `${l.durationMin} menit` },
+  { key: "views", header: "Views", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (l) => l.views, cell: (l) => formatNumber(l.views) },
+  { key: "gmv", header: "GMV", cellClassName: "whitespace-nowrap font-semibold text-[#2563EB]", sortAccessor: (l) => l.gmv, cell: (l) => formatIdrCompact(l.gmv) },
+  { key: "orders", header: "Orders", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (l) => l.orders, cell: (l) => formatNumber(l.orders) },
+];
+
+const VIDEO_COLUMNS: DataTableColumn<ShopeeVideo>[] = [
+  { key: "title", header: "Video", cellClassName: "font-medium text-[#14213D]", sortAccessor: (v) => v.title, cell: (v) => v.title },
+  { key: "publishTime", header: "Dipublish", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (v) => v.publishTime, cell: (v) => formatDateTime(v.publishTime) },
+  { key: "views", header: "Views", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (v) => v.views, cell: (v) => formatNumber(v.views) },
+  { key: "likes", header: "Likes", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (v) => v.likes, cell: (v) => formatNumber(v.likes) },
+  { key: "gmv", header: "GMV", cellClassName: "whitespace-nowrap font-semibold text-[#2563EB]", sortAccessor: (v) => v.gmv, cell: (v) => formatIdrCompact(v.gmv) },
+  { key: "orders", header: "Orders", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (v) => v.orders, cell: (v) => formatNumber(v.orders) },
+];
 
 export function KontenSection({
   livestreams,
@@ -49,59 +70,29 @@ export function KontenSection({
 
       <section className="mt-8">
         <h2 className="gfx-section-title">Sesi livestream</h2>
-        <div className="gfx-table-wrap mt-3 overflow-x-auto">
-          <table className="w-full min-w-[680px] text-left text-sm">
-            <thead>
-              <tr>
-                {["Sesi", "Mulai", "Durasi", "Views", "GMV", "Orders"].map((h) => (
-                  <th key={h} className="gfx-th px-3 py-2">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {livestreams.map((l) => (
-                <tr key={l.sessionId} className="gfx-row-border">
-                  <td className="px-3 py-2 font-medium text-[#14213D]">{l.title}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatDateTime(l.startTime)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{l.durationMin} menit</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(l.views)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#2563EB]">{formatIdrCompact(l.gmv)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(l.orders)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="mt-3">
+          <DataTable
+            columns={LIVE_COLUMNS}
+            rows={livestreams}
+            rowKey={(l) => l.sessionId}
+            initialSort={{ key: "gmv", direction: "desc" }}
+            minWidth={680}
+            emptyMessage="Belum ada sesi livestream."
+          />
         </div>
       </section>
 
       <section className="mt-8 mb-4">
         <h2 className="gfx-section-title">Performa video</h2>
-        <div className="gfx-table-wrap mt-3 overflow-x-auto">
-          <table className="w-full min-w-[680px] text-left text-sm">
-            <thead>
-              <tr>
-                {["Video", "Dipublish", "Views", "Likes", "GMV", "Orders"].map((h) => (
-                  <th key={h} className="gfx-th px-3 py-2">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {videos.map((v) => (
-                <tr key={v.videoId} className="gfx-row-border">
-                  <td className="px-3 py-2 font-medium text-[#14213D]">{v.title}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatDateTime(v.publishTime)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(v.views)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(v.likes)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#2563EB]">{formatIdrCompact(v.gmv)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(v.orders)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="mt-3">
+          <DataTable
+            columns={VIDEO_COLUMNS}
+            rows={videos}
+            rowKey={(v) => v.videoId}
+            initialSort={{ key: "gmv", direction: "desc" }}
+            minWidth={680}
+            emptyMessage="Belum ada video."
+          />
         </div>
       </section>
     </>

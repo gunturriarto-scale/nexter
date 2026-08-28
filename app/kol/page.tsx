@@ -1,244 +1,230 @@
 import {
-  MOCK_AFFILIATE_COLLABORATIONS,
-  MOCK_AFFILIATE_CREATORS,
-  MOCK_AFFILIATE_ORDERS,
-  MOCK_AFFILIATE_SAMPLES,
+  MOCK_AFFILIATE_CAMPAIGNS,
+  MOCK_AFFILIATE_DAILY_FACTS,
+  MOCK_AFFILIATE_PICS,
+  MOCK_AFFILIATE_PROFILES,
   MOCK_AFFILIATE_VIDEOS,
-  MOCK_BRANDS,
-  MOCK_CREATORS,
-  MOCK_DISCOVERY,
-  MOCK_TRACKED_POSTS,
-  MOCK_TRENDING_HASHTAGS,
-  MOCK_TRENDING_SOUNDS,
-} from "@/lib/kol/mock-data";
-import { buildKolAlerts, buildLeaderboard, buildProductPerformance, buildTierPerformance, engagementRate } from "@/lib/kol/aggregate";
-import { formatCompact, formatNumber } from "@/lib/kol/format";
-import { classifyTier, KolTier, TIER_LABEL, TIER_ORDER } from "@/lib/kol/tier";
-import { SeverityDot, alertCardClass } from "@/app/kol/ui";
-import { Leaderboard } from "@/app/kol/leaderboard";
-import { TrackedPosts } from "@/app/kol/tracked-posts";
-import { DiscoveryTable } from "@/app/kol/discovery-table";
-import { TierPerformanceTable } from "@/app/kol/tier-performance";
-import { ProductPerformanceTable } from "@/app/kol/product-performance";
-import { TrendingHashtagsTable, TrendingSoundsTable } from "@/app/kol/trends";
-import { AffiliateOverview } from "@/app/kol/affiliate-overview";
+  MOCK_COMPETITIONS,
+  MOCK_CREATOR_LEVEL_SNAPSHOTS,
+} from "@/lib/kol/affiliate-mock-data";
+import {
+  buildAffiliateCreatorRows,
+  buildAffiliateOverview,
+  buildAffiliatePicBreakdown,
+  buildAffiliatePicRows,
+  buildAffiliateTrend,
+  buildAffiliateVideoRows,
+  buildCompetitionRows,
+  findUnmatchedUsernames,
+} from "@/lib/kol/affiliate-aggregate";
+import { AffiliateFilters, AffiliateTimeGrain, MetricValue } from "@/lib/kol/affiliate-types";
+import Link from "next/link";
+import { AffiliateTrendChart } from "@/app/kol/affiliate-trend-chart";
+import {
+  AffiliateCreatorLeaderboard,
+  AffiliateVideoValidation,
+  CompetitionCenter,
+  DataQualityNotice,
+} from "@/app/kol/affiliate-dashboard-sections";
+import { AffiliatePicBreakdown, AffiliatePicPerformance } from "@/app/kol/affiliate-pic-sections";
 
 export const dynamic = "force-dynamic";
+
+const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+const TABS = [
+  { key: "ringkasan", label: "Ringkasan", icon: "📊" },
+  { key: "creator", label: "Per Creator", icon: "👥" },
+  { key: "konten", label: "Konten", icon: "🎬" },
+  { key: "competition", label: "Competition", icon: "🏆" },
+] as const;
+type TabKey = (typeof TABS)[number]["key"];
+
+function first(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function compactIdr(value: number): string {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(value);
+}
+
+function integer(value: number): string {
+  return new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(value);
+}
+
+function Change({ metric }: { metric: MetricValue }) {
+  if (metric.growthPct === null) {
+    return <span className="text-[10px] font-semibold text-[#2563EB]">Baru vs periode sebelumnya</span>;
+  }
+  const positive = metric.growthPct >= 0;
+  return (
+    <span className={`text-[10px] font-semibold ${positive ? "text-emerald-600" : "text-rose-600"}`}>
+      {positive ? "▲" : "▼"} {Math.abs(metric.growthPct).toFixed(1)}% vs periode sebelumnya
+    </span>
+  );
+}
 
 export default async function CreatorPage({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | undefined }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const params = await searchParams;
-  const brand = params.brand || undefined;
-  const tier = TIER_ORDER.includes(params.tier as KolTier) ? (params.tier as KolTier) : undefined;
-  const product = params.product || undefined;
+  const startParam = first(params.start);
+  const endParam = first(params.end);
+  const grainParam = first(params.grain);
+  const grain: AffiliateTimeGrain = ["daily", "weekly", "monthly"].includes(grainParam ?? "")
+    ? (grainParam as AffiliateTimeGrain)
+    : "daily";
+  const startDate = startParam && DATE_PATTERN.test(startParam) ? startParam : "2026-08-01";
+  const endDate = endParam && DATE_PATTERN.test(endParam) && endParam >= startDate ? endParam : "2026-08-28";
+  const campaignId = MOCK_AFFILIATE_CAMPAIGNS.some((campaign) => campaign.campaignId === first(params.campaign))
+    ? first(params.campaign)
+    : undefined;
+  const creatorLevel = first(params.level) || undefined;
+  const creatorTag = first(params.tag) || undefined;
+  const query = first(params.q) || undefined;
+  const selectedCompetition =
+    MOCK_COMPETITIONS.find((competition) => competition.competitionId === first(params.event)) ?? MOCK_COMPETITIONS[0];
+  const filters: AffiliateFilters = { startDate, endDate, grain, campaignId, creatorLevel, creatorTag, query };
 
-  const inScope = <T extends { brand: string }>(rows: T[]) => (brand ? rows.filter((r) => r.brand === brand) : rows);
+  const tabParam = first(params.tab) ?? "ringkasan";
+  const activeTab: TabKey = TABS.some((tab) => tab.key === tabParam) ? (tabParam as TabKey) : "ringkasan";
 
-  const productOptions = Array.from(
-    new Set(
-      MOCK_CREATORS.filter((c) => (!brand || c.brand === brand) && c.productFocus !== "Multi-produk").map(
-        (c) => c.productFocus
-      )
-    )
-  ).sort();
+  function tabHref(tab: TabKey): string {
+    const search = new URLSearchParams({ tab });
+    search.set("start", startDate);
+    search.set("end", endDate);
+    if (grain !== "daily") search.set("grain", grain);
+    if (campaignId) search.set("campaign", campaignId);
+    if (creatorLevel) search.set("level", creatorLevel);
+    if (creatorTag) search.set("tag", creatorTag);
+    if (query) search.set("q", query);
+    search.set("event", selectedCompetition.competitionId);
+    return `/creator?${search.toString()}`;
+  }
 
-  const creators = inScope(MOCK_CREATORS).filter(
-    (c) => (!tier || classifyTier(c.followerCount) === tier) && (!product || c.productFocus === product)
-  );
-  const creatorIds = new Set(creators.map((c) => c.creatorId));
-  const posts = inScope(MOCK_TRACKED_POSTS).filter((p) => creatorIds.has(p.creatorId));
-  const discovery = inScope(MOCK_DISCOVERY).filter(
-    (c) => (!tier || classifyTier(c.followerCount) === tier) && (!product || c.productFocus === product)
-  );
-  const trendingHashtags = inScope(MOCK_TRENDING_HASHTAGS);
-  const trendingSounds = inScope(MOCK_TRENDING_SOUNDS);
-
-  const leaderboard = buildLeaderboard(creators, posts);
-  const tierPerformance = buildTierPerformance(leaderboard);
-  const productPerformance = buildProductPerformance(leaderboard);
-  const alerts = buildKolAlerts(creators, posts);
-
-  const okPosts = posts.filter((p) => p.syncStatus === "ok");
-  const totalViews = okPosts.reduce((a, p) => a + p.views, 0);
-  const avgEngagement = okPosts.length > 0 ? okPosts.reduce((a, p) => a + engagementRate(p), 0) / okPosts.length : 0;
-  const paidPosts = okPosts.filter((p) => p.linkedGmvMax);
-  const totalPaidCost = paidPosts.reduce((a, p) => a + (p.linkedGmvMax?.cost ?? 0), 0);
-  const totalPaidOrders = paidPosts.reduce((a, p) => a + (p.linkedGmvMax?.orders ?? 0), 0);
+  const overview = buildAffiliateOverview(MOCK_AFFILIATE_DAILY_FACTS, MOCK_AFFILIATE_VIDEOS, MOCK_AFFILIATE_PROFILES, MOCK_AFFILIATE_CAMPAIGNS, MOCK_CREATOR_LEVEL_SNAPSHOTS, filters);
+  const trend = buildAffiliateTrend(MOCK_AFFILIATE_DAILY_FACTS, MOCK_AFFILIATE_VIDEOS, MOCK_AFFILIATE_PROFILES, MOCK_AFFILIATE_CAMPAIGNS, MOCK_CREATOR_LEVEL_SNAPSHOTS, filters);
+  const creatorRows = buildAffiliateCreatorRows(MOCK_AFFILIATE_DAILY_FACTS, MOCK_AFFILIATE_VIDEOS, MOCK_AFFILIATE_PROFILES, MOCK_AFFILIATE_CAMPAIGNS, MOCK_CREATOR_LEVEL_SNAPSHOTS, filters);
+  const videoRows = buildAffiliateVideoRows(MOCK_AFFILIATE_DAILY_FACTS, MOCK_AFFILIATE_VIDEOS, MOCK_AFFILIATE_PROFILES, MOCK_AFFILIATE_CAMPAIGNS, MOCK_CREATOR_LEVEL_SNAPSHOTS, filters);
+  const competitionRows =
+    campaignId && campaignId !== selectedCompetition.campaignId
+      ? []
+      : buildCompetitionRows(
+          selectedCompetition,
+          MOCK_AFFILIATE_DAILY_FACTS,
+          MOCK_AFFILIATE_VIDEOS,
+          MOCK_AFFILIATE_PROFILES,
+          MOCK_CREATOR_LEVEL_SNAPSHOTS,
+          filters
+        );
+  const picRows = buildAffiliatePicRows(MOCK_AFFILIATE_DAILY_FACTS, MOCK_AFFILIATE_VIDEOS, MOCK_AFFILIATE_PROFILES, MOCK_AFFILIATE_CAMPAIGNS, MOCK_CREATOR_LEVEL_SNAPSHOTS, MOCK_AFFILIATE_PICS, filters);
+  const picBreakdown = buildAffiliatePicBreakdown(MOCK_AFFILIATE_DAILY_FACTS, MOCK_AFFILIATE_VIDEOS, MOCK_AFFILIATE_PROFILES, MOCK_AFFILIATE_CAMPAIGNS, MOCK_CREATOR_LEVEL_SNAPSHOTS, MOCK_AFFILIATE_PICS, filters);
+  const unmatchedUsernames = findUnmatchedUsernames(MOCK_AFFILIATE_DAILY_FACTS, MOCK_AFFILIATE_PROFILES);
+  const levels = Array.from(new Set(MOCK_CREATOR_LEVEL_SNAPSHOTS.map((snapshot) => snapshot.level))).sort();
+  const tags = Array.from(new Set(MOCK_AFFILIATE_PROFILES.flatMap((creator) => creator.tags))).sort();
+  const kpis = [
+    { label: "Affiliate GMV", value: compactIdr(overview.gmv.current), metric: overview.gmv },
+    { label: "Affiliate NMV", value: compactIdr(overview.nmv.current), metric: overview.nmv },
+    { label: "Active affiliates", value: integer(overview.activeAffiliates.current), metric: overview.activeAffiliates },
+    { label: "Video quantity", value: integer(overview.videoQuantity.current), metric: overview.videoQuantity },
+    { label: "Valid videos", value: integer(overview.validVideoQuantity.current), metric: overview.validVideoQuantity },
+    { label: "Orders", value: integer(overview.orders.current), metric: overview.orders },
+    { label: "Commission", value: compactIdr(overview.commission.current), metric: overview.commission },
+  ];
 
   return (
-    <main className="mx-auto max-w-7xl px-6 py-10">
-      <div className="mb-4 inline-flex items-center gap-2 rounded-none bg-white px-3 py-1 text-xs font-semibold text-[#0891B2] ring-1 ring-[#BFDBFE]">
-        <span className="h-2 w-2 rounded-none bg-[#2563EB]" />
-        Mockup mode — official TikTok Shop OpenAPI field map
+    <main className="mx-auto max-w-[1500px] px-4 py-7 sm:px-6">
+      <div className="flex flex-col gap-4 border-b border-[#D9E3EE] pb-5 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            <span className="gfx-chip bg-[#DBEAFE] text-[#1D4ED8]">MOCK DATA · API-READY</span>
+            <span className="gfx-chip bg-[#ECFDF5] text-[#047857]">CREATOR TYPE: AFFILIATE</span>
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-[#14213D]">Affiliate Creator Intelligence</h1>
+          <p className="mt-1 max-w-2xl text-[11px] text-[#7A8AA3]">Monitor affiliate marketing, creator contribution, valid content, dan competition performance dalam satu scope data.</p>
+        </div>
+        <div className="text-left text-[10px] leading-5 text-[#7A8AA3] lg:text-right">
+          <div>Timezone: Asia/Jakarta · Currency: IDR</div>
+          <div>Creator Level snapshot: Aug 2026</div>
+        </div>
       </div>
-      <h1 className="font-serif text-3xl font-semibold tracking-tight text-[#14213D]">
-        Creator <span className="gfx-text-gradient">Command Center</span>
-      </h1>
-      <p className="mt-1 text-sm text-[#7A8AA3]">
-        Affiliate GMV, creator performance, collaboration, sample, commission, dan content attribution.
-      </p>
 
-      <form className="gfx-filter-bar mt-6 flex flex-wrap items-end gap-4 p-4">
-        <label className="flex flex-col text-sm text-[#4B5D78]">
-          Brand
-          <select name="brand" defaultValue={brand ?? ""} className="gfx-select mt-1">
-            <option value="">Semua brand</option>
-            {MOCK_BRANDS.map((b) => (
-              <option key={b} value={b}>
-                {b}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex flex-col text-sm text-[#4B5D78]">
-          Tier Creator
-          <select name="tier" defaultValue={tier ?? ""} className="gfx-select mt-1">
-            <option value="">Semua tier</option>
-            {TIER_ORDER.map((t) => (
-              <option key={t} value={t}>
-                {TIER_LABEL[t]}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex flex-col text-sm text-[#4B5D78]">
-          Fokus produk
-          <select name="product" defaultValue={product ?? ""} className="gfx-select mt-1 max-w-[260px]">
-            <option value="">Semua produk</option>
-            {productOptions.map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
-            ))}
-          </select>
-        </label>
-        <button type="submit" className="gfx-btn">
-          Terapkan
-        </button>
+      <form className="gfx-filter-bar mt-5 grid grid-cols-2 gap-3 p-4 md:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-9">
+        <input type="hidden" name="tab" value={activeTab} />
+        <label className="flex flex-col text-[10px] font-semibold uppercase tracking-[0.06em] text-[#71839B]">Creator type<input className="gfx-input mt-1 cursor-not-allowed bg-[#F3F7FB] font-semibold text-[#2563EB]" value="Affiliate" disabled readOnly /></label>
+        <label className="flex flex-col text-[10px] font-semibold uppercase tracking-[0.06em] text-[#71839B]">From<input type="date" name="start" defaultValue={startDate} className="gfx-input mt-1" /></label>
+        <label className="flex flex-col text-[10px] font-semibold uppercase tracking-[0.06em] text-[#71839B]">To<input type="date" name="end" defaultValue={endDate} className="gfx-input mt-1" /></label>
+        <label className="flex flex-col text-[10px] font-semibold uppercase tracking-[0.06em] text-[#71839B]">Breakdown<select name="grain" defaultValue={grain} className="gfx-select mt-1"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select></label>
+        <label className="flex flex-col text-[10px] font-semibold uppercase tracking-[0.06em] text-[#71839B]">Campaign<select name="campaign" defaultValue={campaignId ?? ""} className="gfx-select mt-1"><option value="">All campaigns</option>{MOCK_AFFILIATE_CAMPAIGNS.map((campaign) => <option key={campaign.campaignId} value={campaign.campaignId}>{campaign.name}</option>)}</select></label>
+        <label className="flex flex-col text-[10px] font-semibold uppercase tracking-[0.06em] text-[#71839B]">TikTok level<select name="level" defaultValue={creatorLevel ?? ""} className="gfx-select mt-1"><option value="">All levels</option>{levels.map((level) => <option key={level} value={level}>{level}</option>)}</select></label>
+        <label className="flex flex-col text-[10px] font-semibold uppercase tracking-[0.06em] text-[#71839B]">Internal tag<select name="tag" defaultValue={creatorTag ?? ""} className="gfx-select mt-1"><option value="">All tags</option>{tags.map((tag) => <option key={tag} value={tag}>{tag}</option>)}</select></label>
+        <label className="flex flex-col text-[10px] font-semibold uppercase tracking-[0.06em] text-[#71839B]">Creator search<input name="q" defaultValue={query ?? ""} placeholder="Name or @handle" className="gfx-input mt-1" /></label>
+        <label className="flex flex-col text-[10px] font-semibold uppercase tracking-[0.06em] text-[#71839B]">Competition<select name="event" defaultValue={selectedCompetition.competitionId} className="gfx-select mt-1">{MOCK_COMPETITIONS.map((competition) => <option key={competition.competitionId} value={competition.competitionId}>{competition.name}</option>)}</select></label>
+        <div className="col-span-2 flex items-end gap-2 md:col-span-4 xl:col-span-6 2xl:col-span-9"><button type="submit" className="gfx-btn">Apply filters</button><a href={`/creator?tab=${activeTab}`} className="px-3 py-2 text-[11px] font-semibold text-[#536984] hover:text-[#2563EB]">Reset</a></div>
       </form>
 
-      <AffiliateOverview
-        creators={MOCK_AFFILIATE_CREATORS}
-        videos={MOCK_AFFILIATE_VIDEOS}
-        orders={MOCK_AFFILIATE_ORDERS}
-        samples={MOCK_AFFILIATE_SAMPLES}
-        collaborations={MOCK_AFFILIATE_COLLABORATIONS}
-      />
+      <div className="mt-5 flex flex-wrap gap-2 border-b border-[#DDE6F0]">
+        {TABS.map((tab) => {
+          const active = activeTab === tab.key;
+          return (
+            <Link
+              key={tab.key}
+              href={tabHref(tab.key)}
+              className={`-mb-px rounded-none px-4 py-2.5 text-sm font-semibold transition-colors ${
+                active
+                  ? "border border-b-0 border-[#DDE6F0] bg-white text-[#2563EB]"
+                  : "text-[#7A8AA3] hover:bg-[#EFF6FF] hover:text-[#14213D]"
+              }`}
+            >
+              <span className="mr-1.5">{tab.icon}</span>
+              {tab.label}
+            </Link>
+          );
+        })}
+      </div>
 
-      <section className="mt-12 border-t border-[#e8dce2] pt-8">
-        <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0891B2]">Enrichment layer</div>
-        <h2 className="gfx-section-title mt-1">Social signals + GMV Max overlay</h2>
-        <p className="gfx-section-desc mt-1">Data pendamping dari tracked posts, discovery source, dan paid creative matching.</p>
-      </section>
+      {activeTab === "ringkasan" && (
+        <>
+          <section className="mt-6">
+            <div className="flex items-end justify-between gap-4"><div><div className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#2563EB]">Affiliate Marketing Overview</div><h2 className="gfx-section-title mt-1">Performance snapshot</h2></div><div className="text-[10px] text-[#7A8AA3]">{startDate} — {endDate}</div></div>
+            <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
+              {kpis.map((kpi) => <article key={kpi.label} className="gfx-kpi min-h-[94px]"><div className="kpi-label">{kpi.label}</div><div className="kpi-value">{kpi.value}</div><div className="mt-2"><Change metric={kpi.metric} /></div></article>)}
+            </div>
+          </section>
 
-      <section className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-        {[
-          { label: "Creator aktif", value: formatNumber(creators.length) },
-          { label: "Tracked posts", value: formatNumber(posts.length) },
-          { label: "Total views", value: formatCompact(totalViews) },
-          { label: "Avg. engagement", value: `${avgEngagement.toFixed(1)}%` },
-          { label: "Paid (GMV Max) cost", value: formatCompact(totalPaidCost) },
-          { label: "Paid orders", value: formatNumber(totalPaidOrders) },
-        ].map((k) => (
-          <div key={k.label} className="gfx-kpi">
-            <div className="kpi-label">{k.label}</div>
-            <div className="kpi-value">{k.value}</div>
-          </div>
-        ))}
-      </section>
+          <section className="gfx-card mt-5 p-4">
+            <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="gfx-section-title">GMV &amp; NMV trend</h2><p className="gfx-section-desc mt-1">Affiliate-only performance, grouped {grain}.</p></div><div className="flex gap-4 text-[10px] text-[#71839B]"><span><i className="mr-1 inline-block h-2 w-2 bg-[#2563EB]" />GMV</span><span><i className="mr-1 inline-block h-2 w-2 bg-[#22D3EE]" />NMV</span></div></div>
+            <div className="mt-3 h-[300px]"><AffiliateTrendChart data={trend} /></div>
+          </section>
 
-      {alerts.length > 0 && (
-        <section className="mt-8">
-          <h2 className="gfx-section-title">Yang perlu diperhatikan ({alerts.length})</h2>
-          <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2">
-            {alerts.slice(0, 10).map((a, i) => (
-              <div key={i} className={alertCardClass(a.severity)}>
-                <div className="flex items-center gap-2 font-medium">
-                  <SeverityDot severity={a.severity} />
-                  {a.title}
-                  <span className="ml-auto text-[11px] font-normal opacity-70">{a.brand}</span>
-                </div>
-                <p className="mt-1 opacity-90">{a.detail}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+          <DataQualityNotice usernames={unmatchedUsernames} />
+          <AffiliateCreatorLeaderboard rows={creatorRows} />
+        </>
       )}
 
-      <section className="mt-8">
-        <h2 className="gfx-section-title">Performa per kategori Creator</h2>
-        <p className="gfx-section-desc mt-1">
-          Klasifikasi Nano/Micro/Mid/Macro/Mega Creator berdasarkan jumlah follower — bandingkan tier mana
-          yang paling efisien (views, engagement) buat brand ini.
-        </p>
-        <div className="mt-3">
-          <TierPerformanceTable rows={tierPerformance} />
-        </div>
-      </section>
+      {activeTab === "creator" && (
+        <>
+          <AffiliatePicPerformance rows={picRows} />
+          <AffiliatePicBreakdown groups={picBreakdown} />
+        </>
+      )}
 
-      <section className="mt-8">
-        <h2 className="gfx-section-title">Performa per produk / SKU</h2>
-        <p className="gfx-section-desc mt-1">
-          Creator dikelompokkan berdasarkan produk yang jadi fokus kolaborasinya — lihat SKU mana yang
-          paling banyak didorong lewat creator, dan seberapa efektif.
-        </p>
-        <div className="mt-3">
-          <ProductPerformanceTable rows={productPerformance} />
-        </div>
-      </section>
+      {activeTab === "konten" && <AffiliateVideoValidation rows={videoRows} />}
 
-      <section className="mt-8">
-        <h2 className="gfx-section-title">Leaderboard Creator</h2>
-        <p className="gfx-section-desc mt-1">
-          Diurutkan by total views. Kolom &quot;Paid (GMV Max)&quot; cuma keisi kalau ada video creator ini yang
-          juga jalan sebagai creative berbayar.
-        </p>
-        <div className="mt-3">
-          <Leaderboard rows={leaderboard} />
-        </div>
-      </section>
+      {activeTab === "competition" && (
+        <CompetitionCenter competition={selectedCompetition} rows={competitionRows} />
+      )}
 
-      <section className="mt-8">
-        <h2 className="gfx-section-title">Tracked post links</h2>
-        <p className="gfx-section-desc mt-1">
-          Database link post yang dikumpulkan tim Creator sendiri, performa di-refresh berkala lewat
-          ScrapeCreators.
-        </p>
-        <div className="mt-3">
-          <TrackedPosts posts={posts} creators={creators} />
-        </div>
-      </section>
-
-      <section className="mt-8">
-        <h2 className="gfx-section-title">Tren hashtag & sound naik daun</h2>
-        <p className="gfx-section-desc mt-1">
-          Dari ScrapeCreators (Search by Hashtag, Get Song Details) — sinyal buat nentuin arah konten &amp;
-          kandidat Creator berikutnya. 🔥 = growth ≥40% minggu ke minggu.
-        </p>
-        <div className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <div>
-            <h3 className="mb-2 text-sm font-semibold text-[#7A8AA3]">Hashtag</h3>
-            <TrendingHashtagsTable hashtags={trendingHashtags} />
-          </div>
-          <div>
-            <h3 className="mb-2 text-sm font-semibold text-[#7A8AA3]">Sound</h3>
-            <TrendingSoundsTable sounds={trendingSounds} />
-          </div>
-        </div>
-      </section>
-
-      <section className="mt-8 mb-4">
-        <h2 className="gfx-section-title">Kandidat Creator baru</h2>
-        <p className="gfx-section-desc mt-1">
-          Kolom &quot;Sumber tren&quot; nunjukin hashtag/sound mana yang munculin kandidat ini.
-        </p>
-        <div className="mt-3">
-          <DiscoveryTable candidates={discovery} />
-        </div>
-      </section>
+      <footer className="mt-8 border-t border-[#D9E3EE] py-5 text-[10px] leading-4 text-[#7A8AA3]">
+        Mockup API-ready. Creator marketplace attributes map to TikTok Shop Affiliate Seller; arbitrary period performance maps to affiliate-account video analytics and affiliate orders. NMV deducts mutually exclusive cancellation, return, and refund adjustments.
+      </footer>
     </main>
   );
 }

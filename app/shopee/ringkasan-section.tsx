@@ -1,8 +1,31 @@
+"use client";
+
 import { Alert, DayPoint, ExecutiveKpis, ParetoRow } from "@/lib/shopee/aggregate";
 import { ShopeeAccountHealthDay } from "@/lib/shopee/types";
 import { formatIdrCompact, formatNumber, formatPercent, formatRoas } from "@/lib/shopee/format";
 import { Card, DeltaBadge, SeverityDot, alertCardClass } from "@/app/shopee/ui";
 import { TrendChart } from "@/app/shopee/trend-chart";
+import { DataTable, type DataTableColumn } from "@/components/data-table";
+
+const PARETO_COLUMNS: DataTableColumn<ParetoRow>[] = [
+  { key: "idx", header: "#", cellClassName: "whitespace-nowrap text-[#7A8AA3]", cell: (_row, index) => index + 1 },
+  { key: "name", header: "Produk", cellClassName: "font-medium text-[#14213D]", sortAccessor: (row) => row.product.itemName, cell: (row) => row.product.itemName },
+  { key: "revenue", header: "Revenue", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (row) => row.revenue, cell: (row) => formatIdrCompact(row.revenue) },
+  {
+    key: "cumulative",
+    header: "% Cumulative",
+    cellClassName: "whitespace-nowrap",
+    sortAccessor: (row) => row.cumulativePct,
+    cell: (row) => (
+      <div className="flex items-center gap-2">
+        <div className="h-1.5 w-16 overflow-hidden rounded-none bg-[#EDF3F8]">
+          <div className="h-full bg-gradient-to-r from-[#2563EB] to-[#0891B2]" style={{ width: `${Math.min(row.cumulativePct, 100)}%` }} />
+        </div>
+        <span className="text-[#4B5D78]">{row.cumulativePct.toFixed(0)}%</span>
+      </div>
+    ),
+  },
+];
 
 export function RingkasanSection({
   kpis,
@@ -82,38 +105,14 @@ export function RingkasanSection({
           Pareto view — kalau top 2-3 SKU udah nyumbang &gt;50% cumulative, itu risiko konsentrasi. Detail
           lengkap ada di tab Produk.
         </p>
-        <div className="gfx-table-wrap mt-3 overflow-x-auto">
-          <table className="w-full min-w-[560px] text-left text-sm">
-            <thead>
-              <tr>
-                {["#", "Produk", "Revenue", "% Cumulative"].map((h) => (
-                  <th key={h} className="gfx-th px-3 py-2">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {paretoTop10.slice(0, 10).map((row, i) => (
-                <tr key={row.product.itemId} className="gfx-row-border">
-                  <td className="whitespace-nowrap px-3 py-2 text-[#7A8AA3]">{i + 1}</td>
-                  <td className="px-3 py-2 font-medium text-[#14213D]">{row.product.itemName}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(row.revenue)}</td>
-                  <td className="whitespace-nowrap px-3 py-2">
-                    <div className="flex items-center gap-2">
-                      <div className="h-1.5 w-16 overflow-hidden rounded-none bg-[#EDF3F8]">
-                        <div
-                          className="h-full bg-gradient-to-r from-[#2563EB] to-[#0891B2]"
-                          style={{ width: `${Math.min(row.cumulativePct, 100)}%` }}
-                        />
-                      </div>
-                      <span className="text-[#4B5D78]">{row.cumulativePct.toFixed(0)}%</span>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="mt-3">
+          <DataTable
+            columns={PARETO_COLUMNS}
+            rows={paretoTop10.slice(0, 10)}
+            rowKey={(row) => row.product.itemId}
+            minWidth={560}
+            emptyMessage="Belum ada data."
+          />
         </div>
       </section>
 

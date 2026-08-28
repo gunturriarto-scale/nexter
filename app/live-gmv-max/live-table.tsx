@@ -1,3 +1,6 @@
+"use client";
+
+import { useMemo } from "react";
 import { LiveCampaign, LiveSession } from "@/lib/live-gmv-max/types";
 import {
   formatCompact,
@@ -13,6 +16,7 @@ import {
   OperationStatusChip,
   RoiProtectionChip,
 } from "@/app/live-gmv-max/ui";
+import { DataTable, type DataTableColumn } from "@/components/data-table";
 
 export function LiveTable({
   sessions,
@@ -21,90 +25,76 @@ export function LiveTable({
   sessions: LiveSession[];
   campaigns: LiveCampaign[];
 }) {
-  const campaignById = new Map(campaigns.map((c) => [c.campaignId, c]));
-  // sort by cost desc
-  const sorted = [...sessions].sort((a, b) => b.cost - a.cost);
+  const columns = useMemo<DataTableColumn<LiveSession>[]>(() => {
+    const campaignById = new Map(campaigns.map((c) => [c.campaignId, c]));
+    return [
+      {
+        key: "live",
+        header: "LIVE",
+        sortAccessor: (s) => s.liveName,
+        cell: (s) => (
+          <>
+            <div className="font-semibold text-[#14213D]">{s.liveName}</div>
+            <div className="text-xs text-[#7A8AA3]">{s.ttAccountName}</div>
+          </>
+        ),
+      },
+      {
+        key: "campaign",
+        header: "Campaign",
+        cellClassName: "text-[#7A8AA3]",
+        sortAccessor: (s) => s.campaignName,
+        cell: (s) => {
+          const camp = campaignById.get(s.campaignId);
+          return (
+            <>
+              <div className="font-semibold text-[#4B5D78]">{s.campaignName}</div>
+              {camp && <OperationStatusChip status={camp.operationStatus} />}
+            </>
+          );
+        },
+      },
+      { key: "status", header: "Status", cellClassName: "whitespace-nowrap", sortAccessor: (s) => s.liveStatus, cell: (s) => <LiveStatusBadge status={s.liveStatus} /> },
+      {
+        key: "mode",
+        header: "Mode",
+        cellClassName: "whitespace-nowrap",
+        sortAccessor: (s) => campaignById.get(s.campaignId)?.bidType ?? "",
+        cell: (s) => {
+          const camp = campaignById.get(s.campaignId);
+          return camp ? <BidTypeChip bidType={camp.bidType} /> : null;
+        },
+      },
+      { key: "launchedTime", header: "Mulai", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (s) => s.launchedTime, cell: (s) => formatDateTime(s.launchedTime) },
+      { key: "durationMin", header: "Durasi", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (s) => s.durationMin, cell: (s) => formatDurationMin(s.durationMin) },
+      { key: "cost", header: "Cost", cellClassName: "whitespace-nowrap font-semibold text-[#14213D]", sortAccessor: (s) => s.cost, cell: (s) => formatCurrency(s.cost) },
+      { key: "grossRevenue", header: "Revenue", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (s) => s.grossRevenue, cell: (s) => formatCurrency(s.grossRevenue) },
+      { key: "roi", header: "ROI", cellClassName: "whitespace-nowrap font-semibold text-[#2563EB]", sortAccessor: (s) => s.roi, cell: (s) => formatRoi(s.roi) },
+      { key: "orders", header: "Orders", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (s) => s.orders, cell: (s) => formatNumber(s.orders) },
+      { key: "liveViews", header: "Views", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (s) => s.liveViews, cell: (s) => formatCompact(s.liveViews) },
+      { key: "views10s", header: "10s views", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (s) => s.views10s, cell: (s) => formatCompact(s.views10s) },
+      { key: "liveFollows", header: "Follows", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (s) => s.liveFollows, cell: (s) => formatNumber(s.liveFollows) },
+      {
+        key: "roiProtection",
+        header: "ROI protection",
+        cellClassName: "whitespace-nowrap",
+        sortAccessor: (s) => campaignById.get(s.campaignId)?.roiProtectionStatus ?? "",
+        cell: (s) => {
+          const camp = campaignById.get(s.campaignId);
+          return camp ? <RoiProtectionChip status={camp.roiProtectionStatus} /> : null;
+        },
+      },
+    ];
+  }, [campaigns]);
 
   return (
-    <div className="gfx-table-wrap overflow-x-auto">
-      <table className="w-full min-w-[1080px] text-left text-sm">
-        <thead>
-          <tr>
-            {[
-              "LIVE",
-              "Campaign",
-              "Status",
-              "Mode",
-              "Mulai",
-              "Durasi",
-              "Cost",
-              "Revenue",
-              "ROI",
-              "Orders",
-              "Views",
-              "10s views",
-              "Follows",
-              "ROI protection",
-            ].map((h) => (
-              <th key={h} className="gfx-th px-3 py-2">
-                {h}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {sorted.length === 0 && (
-            <tr>
-              <td className="px-3 py-4 text-[#7A8AA3]" colSpan={14}>
-                Belum ada LIVE GMV Max untuk filter ini.
-              </td>
-            </tr>
-          )}
-          {sorted.map((s) => {
-            const camp = campaignById.get(s.campaignId);
-            return (
-              <tr key={s.roomId} className="gfx-row-border">
-                <td className="px-3 py-2">
-                  <div className="font-semibold text-[#14213D]">{s.liveName}</div>
-                  <div className="text-xs text-[#7A8AA3]">{s.ttAccountName}</div>
-                </td>
-                <td className="px-3 py-2 text-[#7A8AA3]">
-                  <div className="font-semibold text-[#4B5D78]">{s.campaignName}</div>
-                  {camp && <OperationStatusChip status={camp.operationStatus} />}
-                </td>
-                <td className="whitespace-nowrap px-3 py-2">
-                  <LiveStatusBadge status={s.liveStatus} />
-                </td>
-                <td className="whitespace-nowrap px-3 py-2">
-                  {camp && <BidTypeChip bidType={camp.bidType} />}
-                </td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">
-                  {formatDateTime(s.launchedTime)}
-                </td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">
-                  {formatDurationMin(s.durationMin)}
-                </td>
-                <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#14213D]">
-                  {formatCurrency(s.cost)}
-                </td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">
-                  {formatCurrency(s.grossRevenue)}
-                </td>
-                <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#2563EB]">
-                  {formatRoi(s.roi)}
-                </td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(s.orders)}</td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatCompact(s.liveViews)}</td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatCompact(s.views10s)}</td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(s.liveFollows)}</td>
-                <td className="whitespace-nowrap px-3 py-2">
-                  {camp && <RoiProtectionChip status={camp.roiProtectionStatus} />}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+    <DataTable
+      columns={columns}
+      rows={sessions}
+      rowKey={(s) => s.roomId}
+      initialSort={{ key: "cost", direction: "desc" }}
+      minWidth={1080}
+      emptyMessage="Belum ada LIVE GMV Max untuk filter ini."
+    />
   );
 }

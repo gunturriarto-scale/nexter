@@ -1,8 +1,11 @@
+"use client";
+
 import { ActionableOrder, FunnelRow, LogisticsSummaryRow } from "@/lib/shopee/aggregate";
 import { OrderStatus, ShopeeOrder } from "@/lib/shopee/types";
 import { formatDateTime, formatIdrCompact, formatNumber, maskBuyerUsername } from "@/lib/shopee/format";
 import { OrderStatusChip, SeverityDot } from "@/app/shopee/ui";
 import { StatusFunnel } from "@/app/shopee/status-funnel";
+import { DataTable, type DataTableColumn } from "@/components/data-table";
 
 const STATUS_COLOR: Record<OrderStatus, string> = {
   UNPAID: "bg-amber-300",
@@ -28,6 +31,46 @@ const STATUS_LABEL_ID: Record<OrderStatus, string> = {
   TO_RETURN: "Retur",
 };
 
+const ACTIONABLE_COLUMNS: DataTableColumn<ActionableOrder>[] = [
+  { key: "orderSn", header: "Order SN", cellClassName: "whitespace-nowrap font-medium text-[#14213D]", sortAccessor: (a) => a.order.orderSn, cell: (a) => a.order.orderSn },
+  {
+    key: "item",
+    header: "Item",
+    cellClassName: "text-[#4B5D78]",
+    sortAccessor: (a) => a.order.items[0]?.itemName ?? "",
+    cell: (a) => `${a.order.items[0]?.itemName ?? ""}${a.order.items.length > 1 ? ` +${a.order.items.length - 1} lainnya` : ""}`,
+  },
+  { key: "amount", header: "Amount", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (a) => a.order.totalAmount, cell: (a) => formatIdrCompact(a.order.totalAmount) },
+  { key: "shipBy", header: "Ship-by", cellClassName: "whitespace-nowrap", sortAccessor: (a) => a.order.shipByDate ?? "", cell: (a) => (a.order.shipByDate ? formatDateTime(a.order.shipByDate) : "—") },
+  {
+    key: "status",
+    header: "Status",
+    cellClassName: "whitespace-nowrap",
+    sortAccessor: (a) => (a.overdue ? -1 : a.daysLeft),
+    cell: (a) => (
+      <span className="inline-flex items-center gap-1.5">
+        <SeverityDot severity={a.overdue ? "critical" : "info"} />
+        {a.overdue ? "Lewat deadline" : `${a.daysLeft}h lagi`}
+      </span>
+    ),
+  },
+];
+
+const CARRIER_COLUMNS: DataTableColumn<LogisticsSummaryRow>[] = [
+  { key: "carrier", header: "Kurir", cellClassName: "font-medium text-[#14213D]", sortAccessor: (c) => c.carrier, cell: (c) => c.carrier },
+  { key: "orderCount", header: "Jumlah Order", cellClassName: "text-[#4B5D78]", sortAccessor: (c) => c.orderCount, cell: (c) => formatNumber(c.orderCount) },
+];
+
+const ORDER_COLUMNS: DataTableColumn<ShopeeOrder>[] = [
+  { key: "orderSn", header: "Order SN", cellClassName: "whitespace-nowrap font-medium text-[#14213D]", sortAccessor: (o) => o.orderSn, cell: (o) => o.orderSn },
+  { key: "orderStatus", header: "Status", cellClassName: "whitespace-nowrap", sortAccessor: (o) => o.orderStatus, cell: (o) => <OrderStatusChip status={o.orderStatus} /> },
+  { key: "buyer", header: "Buyer", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (o) => o.buyerUsername, cell: (o) => maskBuyerUsername(o.buyerUsername) },
+  { key: "items", header: "Item", cellClassName: "text-[#4B5D78]", sortAccessor: (o) => o.items.length, cell: (o) => `${o.items.length} item${o.items.length > 1 ? "s" : ""}` },
+  { key: "amount", header: "Amount", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (o) => o.totalAmount, cell: (o) => formatIdrCompact(o.totalAmount) },
+  { key: "createTime", header: "Dibuat", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (o) => o.createTime, cell: (o) => formatDateTime(o.createTime) },
+  { key: "shipByDate", header: "Ship-by", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (o) => o.shipByDate ?? "", cell: (o) => (o.shipByDate ? formatDateTime(o.shipByDate) : "—") },
+];
+
 export function OrderSection({
   funnel,
   actionable,
@@ -46,7 +89,7 @@ export function OrderSection({
   const avgFulfillmentHours =
     orders.filter((o) => o.orderStatus === "SHIPPED" || o.orderStatus === "TO_CONFIRM_RECEIVE" || o.orderStatus === "COMPLETED").length > 0
       ? 38
-      : 0; // illustrative constant until real create->ship timestamps are wired (Wave 2)
+      : 0;
 
   const tiles = [
     { label: "Order Baru", value: formatNumber(newOrders) },
@@ -97,70 +140,28 @@ export function OrderSection({
         <p className="gfx-section-desc mt-1">
           Order READY_TO_SHIP diurutkan berdasarkan ship-by deadline — baris merah artinya sudah lewat batas.
         </p>
-        <div className="gfx-table-wrap mt-3 overflow-x-auto">
-          <table className="w-full min-w-[640px] text-left text-sm">
-            <thead>
-              <tr>
-                {["Order SN", "Item", "Amount", "Ship-by", "Status"].map((h) => (
-                  <th key={h} className="gfx-th px-3 py-2">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {actionable.slice(0, 15).map((a) => (
-                <tr key={a.order.orderSn} className="gfx-row-border">
-                  <td className="whitespace-nowrap px-3 py-2 font-medium text-[#14213D]">{a.order.orderSn}</td>
-                  <td className="px-3 py-2 text-[#4B5D78]">{a.order.items[0]?.itemName}{a.order.items.length > 1 ? ` +${a.order.items.length - 1} lainnya` : ""}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(a.order.totalAmount)}</td>
-                  <td className="whitespace-nowrap px-3 py-2">
-                    {a.order.shipByDate && formatDateTime(a.order.shipByDate)}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-2">
-                    <span className="inline-flex items-center gap-1.5">
-                      <SeverityDot severity={a.overdue ? "critical" : "info"} />
-                      {a.overdue ? "Lewat deadline" : `${a.daysLeft}h lagi`}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-              {actionable.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="px-3 py-6 text-center text-[#7A8AA3]">
-                    Tidak ada order yang perlu aksi sekarang. 🎉
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        <div className="mt-3">
+          <DataTable
+            columns={ACTIONABLE_COLUMNS}
+            rows={actionable}
+            rowKey={(a) => a.order.orderSn}
+            initialSort={{ key: "shipBy", direction: "asc" }}
+            minWidth={640}
+            emptyMessage="Tidak ada order yang perlu aksi sekarang. 🎉"
+          />
         </div>
       </section>
 
       <section className="mt-8">
         <h2 className="gfx-section-title">Logistik</h2>
         <div className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <div className="gfx-table-wrap overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr>
-                  {["Kurir", "Jumlah Order"].map((h) => (
-                    <th key={h} className="gfx-th px-3 py-2">
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {logistics.byCarrier.map((c) => (
-                  <tr key={c.carrier} className="gfx-row-border">
-                    <td className="px-3 py-2 font-medium text-[#14213D]">{c.carrier}</td>
-                    <td className="px-3 py-2 text-[#4B5D78]">{formatNumber(c.orderCount)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <DataTable
+            columns={CARRIER_COLUMNS}
+            rows={logistics.byCarrier}
+            rowKey={(c) => c.carrier}
+            initialSort={{ key: "orderCount", direction: "desc" }}
+            emptyMessage="Belum ada data kurir."
+          />
           <div className="gfx-card p-5">
             <h3 className="mb-3 font-serif text-base font-semibold text-[#14213D]">First Mile Binding</h3>
             <div className="grid grid-cols-2 gap-4">
@@ -201,41 +202,16 @@ export function OrderSection({
             Filter
           </button>
         </form>
-        <div className="gfx-table-wrap mt-3 overflow-x-auto">
-          <table className="w-full min-w-[720px] text-left text-sm">
-            <thead>
-              <tr>
-                {["Order SN", "Status", "Buyer", "Item", "Amount", "Dibuat", "Ship-by"].map((h) => (
-                  <th key={h} className="gfx-th px-3 py-2">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {orders.slice(0, 50).map((o) => (
-                <tr key={o.orderSn} className="gfx-row-border">
-                  <td className="whitespace-nowrap px-3 py-2 font-medium text-[#14213D]">{o.orderSn}</td>
-                  <td className="whitespace-nowrap px-3 py-2">
-                    <OrderStatusChip status={o.orderStatus} />
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{maskBuyerUsername(o.buyerUsername)}</td>
-                  <td className="px-3 py-2 text-[#4B5D78]">
-                    {o.items.length} item{o.items.length > 1 ? "s" : ""}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(o.totalAmount)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatDateTime(o.createTime)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">
-                    {o.shipByDate ? formatDateTime(o.shipByDate) : "—"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="mt-3">
+          <DataTable
+            columns={ORDER_COLUMNS}
+            rows={orders}
+            rowKey={(o) => o.orderSn}
+            initialSort={{ key: "createTime", direction: "desc" }}
+            minWidth={720}
+            emptyMessage="Belum ada order."
+          />
         </div>
-        {orders.length > 50 && (
-          <p className="mt-2 text-xs text-[#7A8AA3]">Menampilkan 50 dari {orders.length} order — pagination menyusul.</p>
-        )}
       </section>
     </>
   );
