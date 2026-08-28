@@ -107,14 +107,14 @@ export function AffiliatePicPerformance({ rows }: { rows: AffiliatePicRow[] }) {
   );
 }
 
-const KPI_TILES: { label: string; value: (row: AffiliatePicRow) => string }[] = [
-  { label: "Creators", value: (row) => integer(row.creatorCount.current) },
-  { label: "Videos", value: (row) => integer(row.videoQuantity.current) },
-  { label: "Total GMV", value: (row) => compactIdr(row.gmv.current) },
-  { label: "Total NMV", value: (row) => compactIdr(row.nmv.current) },
-  { label: "GMV Video", value: (row) => compactIdr(row.gmvVideo.current) },
-  { label: "GMV Live", value: (row) => compactIdr(row.gmvLive.current) },
-  { label: "GMV Product Card", value: (row) => compactIdr(row.gmvProductCard.current) },
+const KPI_TILES: { label: string; metric: (row: AffiliatePicRow) => MetricValue; format: (n: number) => string }[] = [
+  { label: "Creators", metric: (row) => row.creatorCount, format: integer },
+  { label: "Videos", metric: (row) => row.videoQuantity, format: integer },
+  { label: "Total GMV", metric: (row) => row.gmv, format: compactIdr },
+  { label: "Total NMV", metric: (row) => row.nmv, format: compactIdr },
+  { label: "GMV Video", metric: (row) => row.gmvVideo, format: compactIdr },
+  { label: "GMV Live", metric: (row) => row.gmvLive, format: compactIdr },
+  { label: "GMV Product Card", metric: (row) => row.gmvProductCard, format: compactIdr },
 ];
 
 const BREAKDOWN_COLUMNS: DataTableColumn<AffiliatePicCreatorRow>[] = [
@@ -176,12 +176,18 @@ export function AffiliatePicBreakdown({
           </div>
 
           <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
-            {KPI_TILES.map((tile) => (
-              <div key={tile.label} className="gfx-kpi">
-                <div className="kpi-label">{tile.label}</div>
-                <div className="kpi-value">{tile.value(group.totals)}</div>
-              </div>
-            ))}
+            {KPI_TILES.map((tile) => {
+              const m = tile.metric(group.totals);
+              return (
+                <div key={tile.label} className="gfx-kpi">
+                  <div className="kpi-label">{tile.label}</div>
+                  <div className="kpi-value">{tile.format(m.current)}</div>
+                  <div className="mt-1">
+                    <GrowthInline value={m.growthPct} />
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           <div className="mt-3">
