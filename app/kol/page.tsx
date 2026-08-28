@@ -204,15 +204,14 @@ export default async function CreatorPage({
             <div className="mt-3 h-[300px]"><AffiliateTrendChart data={trend} /></div>
           </section>
 
-          <AffiliatePicPerformance rows={picRows} />
           <DataQualityNotice usernames={unmatchedUsernames} />
+          <AffiliateCreatorLeaderboard rows={creatorRows} />
         </>
       )}
 
       {activeTab === "creator" && (
         <>
-          <DataQualityNotice usernames={unmatchedUsernames} />
-          <AffiliateCreatorLeaderboard rows={creatorRows} />
+          <AffiliatePicPerformance rows={picRows} />
           <AffiliatePicBreakdown groups={picBreakdown} />
         </>
       )}
