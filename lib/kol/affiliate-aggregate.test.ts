@@ -168,13 +168,17 @@ describe("pic rollup", () => {
     expect(a.gmv.growthPct).toBeNull(); // previous window empty, current != 0
   });
 
-  it("breakdown lists each creator and reconciles to totals", () => {
+  it("breakdown lists each creator with per-metric current/previous", () => {
     const groups = buildAffiliatePicBreakdown(facts, videos, profiles, campaigns, snapshots, pics, filters);
     const a = groups.find((group) => group.pic.picId === "pic-a")!;
     expect(a.creators).toHaveLength(1);
-    expect(a.creators[0].gmv).toBe(a.totals.gmv.current);
-    expect(a.creators[0].gmvLive).toBe(400);
-    expect(a.creators[0].gmvVideo).toBe(1_000);
-    expect(a.creators[0].gmvProductCard).toBe(200);
+    const c = a.creators[0];
+    expect(c.gmv.current).toBe(a.totals.gmv.current);
+    expect(c.gmvLive.current).toBe(400);
+    expect(c.gmvVideo.current).toBe(1_000);
+    expect(c.gmvProductCard.current).toBe(200);
+    expect(c.videoQuantity.current).toBe(1);
+    expect(c.liveSessions.current).toBe(1); // one LIVE fact row
+    expect(c.gmv.growthPct).toBeNull(); // previous window empty
   });
 });

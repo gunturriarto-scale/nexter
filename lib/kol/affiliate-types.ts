@@ -146,21 +146,20 @@ export interface AffiliatePicRow {
   gmvProductCard: MetricValue;
 }
 
+/**
+ * Per-creator row under a PIC. Every number carries current/previous/growth so
+ * the breakdown table can print a small "% vs previous" under each value.
+ */
 export interface AffiliatePicCreatorRow {
   creator: AffiliateCreatorProfile;
   level: string | null;
-  videoQuantity: number;
-  validVideoQuantity: number;
-  gmv: number; // video + live + product card
-  nmv: number;
-  gmvVideo: number;
-  gmvLive: number;
-  gmvProductCard: number;
-  nmvVideo: number;
-  nmvLive: number;
-  nmvProductCard: number;
-  commission: number;
-  growthPct: number | null; // total GMV vs previous equal-length period
+  gmv: MetricValue; // video + live + product card
+  nmv: MetricValue;
+  gmvVideo: MetricValue;
+  videoQuantity: MetricValue;
+  gmvLive: MetricValue;
+  liveSessions: MetricValue;
+  gmvProductCard: MetricValue;
 }
 
 export interface AffiliateVideoRow {

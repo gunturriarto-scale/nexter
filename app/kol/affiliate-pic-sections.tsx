@@ -16,20 +16,27 @@ function integer(value: number): string {
   return new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(value);
 }
 
-function GrowthBadge({ value }: { value: number | null }) {
-  if (value === null) return <span className="gfx-chip bg-[#DBEAFE] text-[#1D4ED8]">Baru</span>;
-  const positive = value >= 0;
-  return <span className={`gfx-chip ${positive ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"}`}>{positive ? "▲" : "▼"} {Math.abs(value).toFixed(1)}%</span>;
-}
-
-/** Compact "% vs previous" shown inline next to a metric value. */
-function GrowthInline({ value }: { value: number | null }) {
-  if (value === null) return <span className="text-[10px] font-semibold text-[#2563EB]">Baru</span>;
+/** Compact "% vs previous" shown next to / under a metric value. */
+function GrowthInline({ value, size = "sm" }: { value: number | null; size?: "sm" | "xs" }) {
+  const cls = size === "xs" ? "text-[9px]" : "text-[10px]";
+  if (value === null) return <span className={`${cls} font-semibold text-[#2563EB]`}>Baru</span>;
   const positive = value >= 0;
   return (
-    <span className={`text-[10px] font-semibold ${positive ? "text-emerald-600" : "text-rose-600"}`}>
+    <span className={`${cls} font-semibold ${positive ? "text-emerald-600" : "text-rose-600"}`}>
       {positive ? "▲" : "▼"} {Math.abs(value).toFixed(1)}%
     </span>
+  );
+}
+
+/** Two-line table cell: value on top, small "% vs previous" underneath. */
+function metricCell(value: MetricValue, format: (n: number) => string, valueClassName = "font-semibold text-[#14213D]") {
+  return (
+    <div>
+      <div className={valueClassName}>{format(value.current)}</div>
+      <div className="mt-0.5">
+        <GrowthInline value={value.growthPct} size="xs" />
+      </div>
+    </div>
   );
 }
 
@@ -125,19 +132,20 @@ const BREAKDOWN_COLUMNS: DataTableColumn<AffiliatePicCreatorRow>[] = [
       </div>
     ),
   },
+  { key: "gmv", header: "GMV", sortAccessor: (row) => row.gmv.current, cellClassName: "whitespace-nowrap align-top", cell: (row) => metricCell(row.gmv, compactIdr, "font-bold text-[#2563EB]") },
+  { key: "nmv", header: "NMV", sortAccessor: (row) => row.nmv.current, cellClassName: "whitespace-nowrap align-top", cell: (row) => metricCell(row.nmv, compactIdr, "font-semibold text-[#0E7490]") },
+  { key: "gmvVideo", header: "GMV Video", sortAccessor: (row) => row.gmvVideo.current, cellClassName: "whitespace-nowrap align-top", cell: (row) => metricCell(row.gmvVideo, compactIdr, "text-[#4B5D78]") },
+  { key: "videoQuantity", header: "Videos", sortAccessor: (row) => row.videoQuantity.current, cellClassName: "whitespace-nowrap align-top", cell: (row) => metricCell(row.videoQuantity, integer, "font-semibold text-[#14213D]") },
+  { key: "gmvLive", header: "GMV Live", sortAccessor: (row) => row.gmvLive.current, cellClassName: "whitespace-nowrap align-top", cell: (row) => metricCell(row.gmvLive, compactIdr, "text-[#4B5D78]") },
+  { key: "liveSessions", header: "Live sessions", sortAccessor: (row) => row.liveSessions.current, cellClassName: "whitespace-nowrap align-top", cell: (row) => metricCell(row.liveSessions, integer, "font-semibold text-[#14213D]") },
+  { key: "gmvProductCard", header: "GMV Product Card", sortAccessor: (row) => row.gmvProductCard.current, cellClassName: "whitespace-nowrap align-top", cell: (row) => metricCell(row.gmvProductCard, compactIdr, "text-[#4B5D78]") },
   {
     key: "level",
     header: "TikTok level",
     sortAccessor: (row) => row.level,
+    cellClassName: "align-top",
     cell: (row) => <span className="gfx-chip bg-[#EEF2FF] text-[#4338CA]">{row.level ?? "Unavailable"}</span>,
   },
-  { key: "videoQuantity", header: "Videos", sortAccessor: (row) => row.videoQuantity, cellClassName: "whitespace-nowrap font-semibold", cell: (row) => row.videoQuantity },
-  { key: "gmv", header: "GMV", sortAccessor: (row) => row.gmv, cellClassName: "whitespace-nowrap font-bold text-[#2563EB]", cell: (row) => compactIdr(row.gmv) },
-  { key: "nmv", header: "NMV", sortAccessor: (row) => row.nmv, cellClassName: "whitespace-nowrap font-semibold text-[#0E7490]", cell: (row) => compactIdr(row.nmv) },
-  { key: "gmvVideo", header: "GMV Video", sortAccessor: (row) => row.gmvVideo, cellClassName: "whitespace-nowrap text-[#4B5D78]", cell: (row) => compactIdr(row.gmvVideo) },
-  { key: "gmvLive", header: "GMV Live", sortAccessor: (row) => row.gmvLive, cellClassName: "whitespace-nowrap text-[#4B5D78]", cell: (row) => compactIdr(row.gmvLive) },
-  { key: "gmvProductCard", header: "GMV Product Card", sortAccessor: (row) => row.gmvProductCard, cellClassName: "whitespace-nowrap text-[#4B5D78]", cell: (row) => compactIdr(row.gmvProductCard) },
-  { key: "growthPct", header: "vs previous", sortAccessor: (row) => row.growthPct, cell: (row) => <GrowthBadge value={row.growthPct} /> },
 ];
 
 export function AffiliatePicBreakdown({
@@ -182,7 +190,7 @@ export function AffiliatePicBreakdown({
               rows={group.creators}
               rowKey={(row) => row.creator.creatorId}
               initialSort={{ key: "gmv", direction: "desc" }}
-              minWidth={1180}
+              minWidth={1320}
               size="xs"
               cellClassName="px-3 py-3"
               emptyMessage="Belum ada creator aktif untuk AM ini pada filter ini."
