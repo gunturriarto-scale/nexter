@@ -34,9 +34,24 @@ const NAV_SECTIONS = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const navItems = NAV_SECTIONS.flatMap((section) => section.items);
 
   return (
-    <aside className="sticky top-0 flex h-screen w-56 shrink-0 flex-col border-r border-[#d9e3ee] bg-white">
+    <>
+      <header className="sticky top-0 z-30 border-b border-[#d9e3ee] bg-white md:hidden">
+        <Link href="/" className="flex items-center gap-2 px-4 py-3">
+          <span className="gfx-gradient flex h-7 w-7 items-center justify-center rounded-[2px] text-xs font-extrabold text-white">H</span>
+          <div><div className="text-sm font-extrabold tracking-tight text-[#14213D]">HERMES</div><div className="text-[8px] font-semibold uppercase tracking-[0.08em] text-[#0891B2]">GLOW FX Data Analyst</div></div>
+        </Link>
+        <nav className="flex gap-1 overflow-x-auto border-t border-[#EEF2F6] px-3 py-2">
+          {navItems.map((item) => {
+            const active = pathname === item.href || pathname.startsWith(item.href + "/");
+            return <Link key={item.href} href={item.href} className={`shrink-0 rounded-[2px] px-3 py-1.5 text-[10px] font-bold ${active ? "bg-[#EFF6FF] text-[#2563EB]" : "text-[#71839B]"}`}>{item.label}</Link>;
+          })}
+        </nav>
+      </header>
+
+      <aside className="sticky top-0 hidden h-screen w-56 shrink-0 flex-col border-r border-[#d9e3ee] bg-white md:flex">
       <Link href="/" className="border-b border-[#d9e3ee] px-4 py-4">
         <div className="flex items-center gap-2">
           <span className="gfx-gradient flex h-7 w-7 items-center justify-center rounded-[2px] text-xs font-extrabold text-white">
@@ -88,6 +103,7 @@ export function Sidebar() {
           <div className="mt-0.5">Commerce intelligence</div>
         </div>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }

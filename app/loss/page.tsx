@@ -1,7 +1,8 @@
 import { MOCK_BRANDS, MOCK_CANCELLATIONS } from "@/lib/loss/mock-data";
 import { buildLossAlerts, groupByReason, sumLoss } from "@/lib/loss/aggregate";
-import { formatCurrency, formatCurrency2, formatNumber } from "@/lib/loss/format";
+import { formatCurrency, formatNumber } from "@/lib/loss/format";
 import { CancelTable } from "@/app/loss/cancel-table";
+import { ReasonBreakdownTable } from "@/app/loss/reason-breakdown-table";
 import { SeverityDot, alertCardClass } from "@/app/loss/ui";
 
 export const dynamic = "force-dynamic";
@@ -106,45 +107,8 @@ export default function LossAnalysisPage() {
           Group by <code className="rounded-none bg-[#EFF6FF] px-1 text-[#0891B2]">cancel_reason</code> —
           lihat akar masalah cancellation (product? shipping? buyer?).
         </p>
-        <div className="gfx-table-wrap mt-3 overflow-x-auto">
-          <table className="w-full min-w-[560px] text-left text-sm">
-            <thead>
-              <tr>
-                <th className="gfx-th px-3 py-2">Alasan</th>
-                <th className="gfx-th px-3 py-2">Jumlah</th>
-                <th className="gfx-th px-3 py-2">Total refund</th>
-                <th className="gfx-th px-3 py-2">Share</th>
-              </tr>
-            </thead>
-            <tbody>
-              {reasons.map((r) => (
-                <tr key={r.reasonKey} className="gfx-row-border">
-                  <td className="px-3 py-2 font-medium text-[#14213D]">{r.reasonText}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(r.count)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#2563EB]">
-                    {formatCurrency2(r.refundTotal)}
-                  </td>
-                  <td className="px-3 py-2">
-                    <div className="flex items-center gap-2">
-                      <div className="h-2 w-24 overflow-hidden rounded-none bg-[#EDF3F8]">
-                        <div
-                          className="h-full rounded-none bg-gradient-to-r from-[#2563EB] to-[#0891B2]"
-                          style={{
-                            width: `${totals.totalRefund > 0 ? (r.refundTotal / totals.totalRefund) * 100 : 0}%`,
-                          }}
-                        />
-                      </div>
-                      <span className="text-xs text-[#7A8AA3]">
-                        {totals.totalRefund > 0
-                          ? `${((r.refundTotal / totals.totalRefund) * 100).toFixed(0)}%`
-                          : "0%"}
-                      </span>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="mt-3">
+          <ReasonBreakdownTable reasons={reasons} totalRefund={totals.totalRefund} />
         </div>
       </section>
 

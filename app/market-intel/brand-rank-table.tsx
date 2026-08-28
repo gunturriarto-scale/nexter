@@ -1,12 +1,10 @@
+"use client";
+
 import { Shop } from "@/lib/market-intel/types";
 import { rankShops, revenueMix, RankedShop } from "@/lib/market-intel/aggregate";
-import {
-  formatIdrCompact,
-  formatNumber,
-  formatPct,
-  formatGrowthPct,
-} from "@/lib/market-intel/format";
+import { formatIdrCompact, formatNumber, formatPct, formatGrowthPct } from "@/lib/market-intel/format";
 import { GlowChip } from "@/app/market-intel/ui";
+import { DataTable, type DataTableColumn } from "@/components/data-table";
 
 function MixBar({ shop }: { shop: Shop }) {
   const mix = revenueMix(shop);
@@ -33,65 +31,39 @@ function MixBar({ shop }: { shop: Shop }) {
   );
 }
 
+const COLUMNS: DataTableColumn<RankedShop>[] = [
+  { key: "rank", header: "#", cellClassName: "font-serif text-lg font-semibold text-[#0891B2]", sortAccessor: (s) => s.rank, cell: (s) => s.rank },
+  {
+    key: "shopName",
+    header: "Brand",
+    sortAccessor: (s) => s.shopName,
+    cell: (s) => (
+      <div className="flex items-center gap-2">
+        <span className="font-semibold text-[#14213D]">{s.shopName}</span>
+        <GlowChip name={s.shopName} />
+      </div>
+    ),
+  },
+  { key: "revenue", header: "Revenue (30 hari)", cellClassName: "whitespace-nowrap font-semibold text-[#14213D]", sortAccessor: (s) => s.revenue, cell: (s) => formatIdrCompact(s.revenue) },
+  { key: "growth", header: "Growth", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (s) => s.revenueGrowthRate, cell: (s) => formatGrowthPct(s.revenueGrowthRate) },
+  { key: "salesVolumn", header: "Sales volume", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (s) => s.salesVolumn, cell: (s) => formatNumber(s.salesVolumn) },
+  { key: "unitPrice", header: "Avg. harga", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (s) => s.unitPrice, cell: (s) => formatIdrCompact(s.unitPrice) },
+  { key: "mix", header: "Revenue mix", cell: (s) => <MixBar shop={s} /> },
+  { key: "creatorNumber", header: "Kreator", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (s) => s.creatorNumber, cell: (s) => formatNumber(s.creatorNumber) },
+  { key: "productNumber", header: "Produk", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (s) => s.productNumber, cell: (s) => formatNumber(s.productNumber) },
+];
+
 export function BrandRankTable({ shops }: { shops: Shop[] }) {
   const ranked = rankShops(shops);
-
   return (
-    <div className="gfx-table-wrap overflow-x-auto">
-      <table className="w-full min-w-[1040px] text-left text-sm">
-        <thead>
-          <tr>
-            {[
-              "#",
-              "Brand",
-              "Revenue (30 hari)",
-              "Growth",
-              "Sales volume",
-              "Avg. harga",
-              "Revenue mix",
-              "Kreator",
-              "Produk",
-            ].map((h) => (
-              <th key={h} className="gfx-th px-3 py-2">
-                {h}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {ranked.map((s: RankedShop) => (
-            <tr
-              key={s.shopId}
-              className={`gfx-row-border ${s.shopName === "Glow FX" ? "bg-[#EFF6FF]/40" : ""}`}
-            >
-              <td className="px-3 py-2 font-serif text-lg font-semibold text-[#0891B2]">{s.rank}</td>
-              <td className="px-3 py-2">
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-[#14213D]">{s.shopName}</span>
-                  <GlowChip name={s.shopName} />
-                </div>
-              </td>
-              <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#14213D]">
-                {formatIdrCompact(s.revenue)}
-              </td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">
-                {formatGrowthPct(s.revenueGrowthRate)}
-              </td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">
-                {formatNumber(s.salesVolumn)}
-              </td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">
-                {formatIdrCompact(s.unitPrice)}
-              </td>
-              <td className="px-3 py-2">
-                <MixBar shop={s} />
-              </td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(s.creatorNumber)}</td>
-              <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(s.productNumber)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <DataTable
+      columns={COLUMNS}
+      rows={ranked}
+      rowKey={(s) => s.shopId}
+      initialSort={{ key: "rank", direction: "asc" }}
+      minWidth={1040}
+      rowClassName={(s) => (s.shopName === "Glow FX" ? "bg-[#EFF6FF]/40" : undefined)}
+      emptyMessage="Belum ada data brand."
+    />
   );
 }

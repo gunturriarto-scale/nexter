@@ -1,69 +1,47 @@
+"use client";
+
 import { CampaignRollup } from "@/lib/gmv-max/aggregate";
 import { formatCurrency, formatPercentDelta, formatRoi } from "@/lib/gmv-max/format";
 import { OperationStatusChip, RoiProtectionChip } from "@/app/gmv-max/ui";
+import { DataTable, type DataTableColumn } from "@/components/data-table";
+
+function budgetOf(r: CampaignRollup): number {
+  return r.campaign.bidType === "NO_BID" ? r.campaign.maxDeliveryBudget : r.campaign.dailyBudget;
+}
+
+const COLUMNS: DataTableColumn<CampaignRollup>[] = [
+  { key: "campaign", header: "Campaign", cellClassName: "whitespace-nowrap font-semibold text-[#14213D]", sortAccessor: (r) => r.campaign.campaignName, cell: (r) => r.campaign.campaignName },
+  { key: "type", header: "Tipe", cellClassName: "whitespace-nowrap text-[#7A8AA3]", sortAccessor: (r) => r.campaign.promotionType, cell: (r) => (r.campaign.promotionType === "PRODUCT_GMV_MAX" ? "Product" : "LIVE") },
+  { key: "mode", header: "Mode", cellClassName: "whitespace-nowrap text-[#7A8AA3]", sortAccessor: (r) => r.campaign.bidType, cell: (r) => (r.campaign.bidType === "NO_BID" ? "Max delivery" : "Target ROI") },
+  { key: "status", header: "Status", cellClassName: "whitespace-nowrap", sortAccessor: (r) => r.campaign.operationStatus, cell: (r) => <OperationStatusChip status={r.campaign.operationStatus} /> },
+  { key: "budget", header: "Budget", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (r) => budgetOf(r), cell: (r) => `${formatCurrency(budgetOf(r))}/hari` },
+  { key: "targetRoi", header: "Target ROI", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (r) => (r.campaign.bidType === "NO_BID" ? null : r.campaign.roasBid), cell: (r) => (r.campaign.bidType === "NO_BID" ? "—" : formatRoi(r.campaign.roasBid)) },
+  { key: "roi", header: "ROI aktual", cellClassName: "whitespace-nowrap font-semibold text-[#14213D]", sortAccessor: (r) => r.roi, cell: (r) => formatRoi(r.roi) },
+  {
+    key: "vsTarget",
+    header: "vs target",
+    sortAccessor: (r) => r.roiVsTargetPct,
+    cellClassName: "whitespace-nowrap font-medium",
+    cell: (r) => {
+      const color = r.roiVsTargetPct === null ? "text-neutral-500" : r.roiVsTargetPct >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400";
+      return <span className={color}>{r.roiVsTargetPct === null ? "—" : formatPercentDelta(r.roi, r.campaign.roasBid)}</span>;
+    },
+  },
+  { key: "cost", header: "Cost", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (r) => r.cost, cell: (r) => formatCurrency(r.cost) },
+  { key: "revenue", header: "Revenue", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (r) => r.grossRevenue, cell: (r) => formatCurrency(r.grossRevenue) },
+  { key: "orders", header: "Orders", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (r) => r.orders, cell: (r) => r.orders },
+  { key: "roiProtection", header: "ROI protection", cellClassName: "whitespace-nowrap", sortAccessor: (r) => r.campaign.roiProtectionStatus, cell: (r) => <RoiProtectionChip status={r.campaign.roiProtectionStatus} /> },
+];
 
 export function CampaignTable({ rollups }: { rollups: CampaignRollup[] }) {
   return (
-    <div className="gfx-table-wrap overflow-x-auto">
-      <table className="w-full min-w-[860px] text-left text-sm">
-        <thead>
-          <tr>
-            {["Campaign", "Tipe", "Mode", "Status", "Budget", "Target ROI", "ROI aktual", "vs target", "Cost", "Revenue", "Orders", "ROI protection"].map(
-              (h) => (
-                <th key={h} className="gfx-th px-3 py-2">
-                  {h}
-                </th>
-              )
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {rollups.length === 0 && (
-            <tr>
-              <td className="px-3 py-4 text-[#7A8AA3]" colSpan={12}>
-                Belum ada campaign untuk filter ini.
-              </td>
-            </tr>
-          )}
-          {rollups.map((r) => {
-            const c = r.campaign;
-            const isMaxDelivery = c.bidType === "NO_BID";
-            const budget = isMaxDelivery ? c.maxDeliveryBudget : c.dailyBudget;
-            const deltaColor =
-              r.roiVsTargetPct === null
-                ? "text-neutral-500"
-                : r.roiVsTargetPct >= 0
-                  ? "text-emerald-600 dark:text-emerald-400"
-                  : "text-rose-600 dark:text-rose-400";
-            return (
-              <tr key={c.campaignId} className="gfx-row-border">
-                <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#14213D]">{c.campaignName}</td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#7A8AA3]">
-                  {c.promotionType === "PRODUCT_GMV_MAX" ? "Product" : "LIVE"}
-                </td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#7A8AA3]">
-                  {isMaxDelivery ? "Max delivery" : "Target ROI"}
-                </td>
-                <td className="whitespace-nowrap px-3 py-2">
-                  <OperationStatusChip status={c.operationStatus} />
-                </td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatCurrency(budget)}/hari</td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{isMaxDelivery ? "—" : formatRoi(c.roasBid)}</td>
-                <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#14213D]">{formatRoi(r.roi)}</td>
-                <td className={`whitespace-nowrap px-3 py-2 font-medium ${deltaColor}`}>
-                  {r.roiVsTargetPct === null ? "—" : formatPercentDelta(r.roi, c.roasBid)}
-                </td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatCurrency(r.cost)}</td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatCurrency(r.grossRevenue)}</td>
-                <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{r.orders}</td>
-                <td className="whitespace-nowrap px-3 py-2">
-                  <RoiProtectionChip status={c.roiProtectionStatus} />
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+    <DataTable
+      columns={COLUMNS}
+      rows={rollups}
+      rowKey={(r) => r.campaign.campaignId}
+      initialSort={{ key: "cost", direction: "desc" }}
+      minWidth={860}
+      emptyMessage="Belum ada campaign untuk filter ini."
+    />
   );
 }

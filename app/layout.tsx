@@ -26,7 +26,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${sans.variable} ${mono.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full bg-[#f4f7fb] font-sans text-[#14213d]">
+      <body className="min-h-full bg-[#f4f7fb] font-sans text-[#14213d] md:flex">
         <Sidebar />
         <div className="min-w-0 flex-1">{children}</div>
       </body>

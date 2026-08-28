@@ -18,6 +18,7 @@ import { formatCurrency, formatNumber, formatRoi } from "@/lib/gmv-max/format";
 import { RoiTrendChart } from "@/app/gmv-max/roi-trend-chart";
 import { CampaignTable } from "@/app/gmv-max/campaign-table";
 import { ProductTable } from "@/app/gmv-max/product-table";
+import { BrandRollupTable } from "@/app/gmv-max/brand-rollup-table";
 import { CreativeGallery } from "@/app/gmv-max/creative-gallery";
 import { LiveSection } from "@/app/gmv-max/live-section";
 import { BudgetAutomationPanel } from "@/app/gmv-max/budget-panel";
@@ -195,32 +196,8 @@ export default async function GmvMaxPage({
       {!filter.brand && (
         <section className="mt-8">
           <h2 className="gfx-section-title">Ringkasan per brand</h2>
-          <div className="gfx-table-wrap mt-3 overflow-x-auto">
-            <table className="w-full min-w-[640px] text-left text-sm">
-              <thead>
-                <tr>
-                  {["Brand", "Campaign aktif", "Cost", "Revenue", "Orders", "ROI"].map((h) => (
-                    <th key={h} className="gfx-th px-3 py-2">
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {brandRollups.map((b) => (
-                  <tr key={b.brand} className="gfx-row-border">
-                    <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#14213D]">{b.brand}</td>
-                    <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">
-                      {b.activeCampaignCount}/{b.campaignCount}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatCurrency(b.cost)}</td>
-                    <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatCurrency(b.grossRevenue)}</td>
-                    <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(b.orders)}</td>
-                    <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#2563EB]">{formatRoi(b.roi)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="mt-3">
+            <BrandRollupTable rollups={brandRollups} />
           </div>
         </section>
       )}

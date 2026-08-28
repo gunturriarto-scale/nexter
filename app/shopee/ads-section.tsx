@@ -1,8 +1,11 @@
+"use client";
+
 import { AdsCampaignRollup, AdsDayPoint, AdsTotals } from "@/lib/shopee/aggregate";
 import { ShopeeAffiliatePerformance } from "@/lib/shopee/types";
 import { formatIdrCompact, formatNumber, formatPercent, formatRoas } from "@/lib/shopee/format";
 import { Card } from "@/app/shopee/ui";
 import { TrendChart } from "@/app/shopee/trend-chart";
+import { DataTable, type DataTableColumn } from "@/components/data-table";
 
 const AD_TYPE_LABEL: Record<string, string> = { PRODUCT: "Product Ads", SHOP: "Shop Ads", KEYWORD: "Keyword Ads" };
 const AD_STATUS_STYLE: Record<string, string> = {
@@ -11,6 +14,25 @@ const AD_STATUS_STYLE: Record<string, string> = {
   ENDED: "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400",
   SCHEDULED: "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300",
 };
+
+const CAMPAIGN_COLUMNS: DataTableColumn<AdsCampaignRollup>[] = [
+  { key: "campaignName", header: "Campaign", cellClassName: "font-medium text-[#14213D]", sortAccessor: (c) => c.campaignName, cell: (c) => c.campaignName },
+  { key: "adType", header: "Tipe", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (c) => c.adType, cell: (c) => AD_TYPE_LABEL[c.adType] },
+  { key: "status", header: "Status", cellClassName: "whitespace-nowrap", sortAccessor: (c) => c.status, cell: (c) => <span className={`rounded-none px-2 py-0.5 text-[11px] font-semibold ${AD_STATUS_STYLE[c.status]}`}>{c.status}</span> },
+  { key: "cost", header: "Cost", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (c) => c.cost, cell: (c) => formatIdrCompact(c.cost) },
+  { key: "gmv", header: "GMV", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (c) => c.gmv, cell: (c) => formatIdrCompact(c.gmv) },
+  { key: "roas", header: "ROAS", cellClassName: "whitespace-nowrap font-semibold text-[#2563EB]", sortAccessor: (c) => c.roas, cell: (c) => formatRoas(c.roas) },
+  { key: "impressions", header: "Impressions", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (c) => c.impressions, cell: (c) => formatNumber(c.impressions) },
+  { key: "clicks", header: "Clicks", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (c) => c.clicks, cell: (c) => formatNumber(c.clicks) },
+];
+
+const AFFILIATE_COLUMNS: DataTableColumn<ShopeeAffiliatePerformance>[] = [
+  { key: "affiliateName", header: "Affiliate", cellClassName: "font-medium text-[#14213D]", sortAccessor: (a) => a.affiliateName, cell: (a) => a.affiliateName },
+  { key: "clicks", header: "Clicks", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (a) => a.clicks, cell: (a) => formatNumber(a.clicks) },
+  { key: "orders", header: "Orders", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (a) => a.orders, cell: (a) => formatNumber(a.orders) },
+  { key: "gmv", header: "GMV", cellClassName: "whitespace-nowrap font-semibold text-[#2563EB]", sortAccessor: (a) => a.gmv, cell: (a) => formatIdrCompact(a.gmv) },
+  { key: "commission", header: "Komisi", cellClassName: "whitespace-nowrap text-[#4B5D78]", sortAccessor: (a) => a.commission, cell: (a) => formatIdrCompact(a.commission) },
+];
 
 export function AdsSection({
   totals,
@@ -62,34 +84,15 @@ export function AdsSection({
 
       <section className="mt-8">
         <h2 className="gfx-section-title">Campaign performance</h2>
-        <div className="gfx-table-wrap mt-3 overflow-x-auto">
-          <table className="w-full min-w-[760px] text-left text-sm">
-            <thead>
-              <tr>
-                {["Campaign", "Tipe", "Status", "Cost", "GMV", "ROAS", "Impressions", "Clicks"].map((h) => (
-                  <th key={h} className="gfx-th px-3 py-2">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {campaigns.map((c) => (
-                <tr key={c.campaignId} className="gfx-row-border">
-                  <td className="px-3 py-2 font-medium text-[#14213D]">{c.campaignName}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{AD_TYPE_LABEL[c.adType]}</td>
-                  <td className="whitespace-nowrap px-3 py-2">
-                    <span className={`rounded-none px-2 py-0.5 text-[11px] font-semibold ${AD_STATUS_STYLE[c.status]}`}>{c.status}</span>
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(c.cost)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(c.gmv)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#2563EB]">{formatRoas(c.roas)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(c.impressions)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(c.clicks)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="mt-3">
+          <DataTable
+            columns={CAMPAIGN_COLUMNS}
+            rows={campaigns}
+            rowKey={(c) => c.campaignId}
+            initialSort={{ key: "cost", direction: "desc" }}
+            minWidth={760}
+            emptyMessage="Belum ada campaign."
+          />
         </div>
       </section>
 
@@ -98,29 +101,15 @@ export function AdsSection({
         <p className="gfx-section-desc mt-1">
           Kreator/affiliate yang paling nge-drive GMV lewat Shopee Ads — setara KOL untuk channel TikTok.
         </p>
-        <div className="gfx-table-wrap mt-3 overflow-x-auto">
-          <table className="w-full min-w-[560px] text-left text-sm">
-            <thead>
-              <tr>
-                {["Affiliate", "Clicks", "Orders", "GMV", "Komisi"].map((h) => (
-                  <th key={h} className="gfx-th px-3 py-2">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {affiliates.map((a) => (
-                <tr key={a.affiliateId} className="gfx-row-border">
-                  <td className="px-3 py-2 font-medium text-[#14213D]">{a.affiliateName}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(a.clicks)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatNumber(a.orders)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#2563EB]">{formatIdrCompact(a.gmv)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-[#4B5D78]">{formatIdrCompact(a.commission)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="mt-3">
+          <DataTable
+            columns={AFFILIATE_COLUMNS}
+            rows={affiliates}
+            rowKey={(a) => a.affiliateId}
+            initialSort={{ key: "gmv", direction: "desc" }}
+            minWidth={560}
+            emptyMessage="Belum ada data affiliate."
+          />
         </div>
       </section>
     </>
