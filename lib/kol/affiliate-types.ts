@@ -107,7 +107,8 @@ export interface AffiliateOverviewMetrics {
   gmvVideo: MetricValue;
   gmvLive: MetricValue;
   gmvProductCard: MetricValue;
-  activeAffiliates: MetricValue;
+  activeAffiliates: MetricValue; // affiliates that generated revenue (any fact)
+  postingAffiliates: MetricValue; // affiliates that posted >= 1 video in the period
   liveStreamers: MetricValue; // distinct creators who went LIVE in the period
   videoQuantity: MetricValue;
   validVideoQuantity: MetricValue;

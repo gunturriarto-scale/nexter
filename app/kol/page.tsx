@@ -137,7 +137,8 @@ export default async function CreatorPage({
     { label: "GMV Live", value: compactIdr(overview.gmvLive.current), metric: overview.gmvLive },
     { label: "Quantity of livestreamers", value: integer(overview.liveStreamers.current), metric: overview.liveStreamers },
     { label: "GMV Product Card", value: compactIdr(overview.gmvProductCard.current), metric: overview.gmvProductCard },
-    { label: "Affiliate actives", value: integer(overview.activeAffiliates.current), metric: overview.activeAffiliates },
+    { label: "Affiliates (earning)", value: integer(overview.activeAffiliates.current), metric: overview.activeAffiliates },
+    { label: "Affiliate actives", value: integer(overview.postingAffiliates.current), metric: overview.postingAffiliates },
     { label: "Orders", value: integer(overview.orders.current), metric: overview.orders },
     { label: "Commissions", value: compactIdr(overview.commission.current), metric: overview.commission },
   ];
